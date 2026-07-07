@@ -3,85 +3,66 @@
 import bcryptjs from 'bcryptjs'
 import crypto from 'crypto'
 import Client from '../models/clientModel.js'
+import Admin from '../models/adminModel.js'
 import { generateTokenAndSetCookie } from '../utils/generateToken.js'
 import { sendVerificationEmail,sendPasswordResetEmail,sendWelcomeEmail ,sendResetSuccessEmail} from '../services/emailService.js'
 
-export const signup = async(req,res)=>{
-    const {email, password, name} = req.body;
-    try {
-        if(!email || !password || !name){
-            throw new Error("All fields are required")
-        }
-        const userAlreadyExists = await User.findOne({email})
-        if(userAlreadyExists){
-            return res.status(400).json({success : false, message: "User already exists"})
-        }
-
-    const hashedPassword = await bcryptjs.hash(password, 10);
-    const verificationToken = Math.floor(100000 + Math.random()*900000).toString();
-    const user = new User({
-        email,
-        password: hashedPassword,
-        name,
-        verificationToken,
-        verificationTokenExpiresAt: Date.now() + 24 * 60 *60 * 1000
-    })
-
-    await user.save();
-    generateTokenAndSetCookie(res,user._id)
-
-    res.status(201).json({
-        success:true,
-        message:'User created successfully',
-        user:{
-          ...user._doc,  
-          password :undefined
-        }
-    })
-    } catch (error) {
-        return res.status(400).json({success : false, message: error.message})
-    }
-}
-
+// =================== LOGIN =======================
 export const login = async (req, res) => { 
+    const { email, password } = req.body;
 
-    const { email, password } = req.body 
     try { 
-        const user = await User.findOne({ email })
-        if (!user) { 
-            return res.status(400).json({ success: false, message: "Invalid credentials" })
-        } 
-        const isPasswordValid = await bcryptjs.compare(password, user.password)
-        if (!isPasswordValid) { 
-            return res.status(400).json({ success: false, message: "Invalid credentials" })
-        } 
-        generateTokenAndSetCookie(res, user._id)
+        let user = null;
+        let role = '';
 
-        user.lastLogin = new Date()
-        await user.save()
+        if (email.endsWith('@admin.com')) {
+            user = await Admin.findOne({ email });
+            role = 'admin';
+        } else {
+            user = await Client.findOne({ email });
+            role = 'client';
+        }
+
+        if (!user) { 
+            return res.status(400).json({ success: false, message: "Identifiants invalides" });
+        } 
+        
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        if (!isPasswordValid) { 
+            return res.status(400).json({ success: false, message: "Identifiants invalides" });
+        } 
+        
+        generateTokenAndSetCookie(res, user._id);
+
+        if (role === 'client' && user.lastLogin) {
+            user.lastLogin = new Date();
+            await user.save();
+        }
+
         res.status(200).json({ 
             success: true, 
-            message: "Logged in successfully", 
+            message: "Connexion réussie", 
             user: { 
-                ...user._doc, 
-                password: undefined, 
+                id: user._id,
+                email: user.email,
+                role: role
+            } 
+        });
 
-            }, 
-
-        })
     } catch (error) { 
-
-        console.log("Error in login ", error)
-        res.status(400).json({ success: false, message: error.message })
+        console.error("Erreur lors de la connexion : ", error);
+        res.status(500).json({ success: false, message: "Erreur serveur" });
     } 
 }
 
+// =================== LOGOUT =======================
 export const logout = async (req, res) => { 
 
     res.clearCookie("token")
     res.status(200).json({ success: true, message: "Logged out successfully" })
 }
 
+// =================== FORGOT PASSWORD =======================
 export const forgotPassword = async(req,res)=>{
     const { email } = req.body
 	try {
@@ -103,6 +84,7 @@ export const forgotPassword = async(req,res)=>{
 	}
 }
 
+// =================== RESET PASSWORD =======================
 export const resetPassword = async (req, res) => {
 	try {
 		const { token } = req.params
@@ -129,6 +111,7 @@ export const resetPassword = async (req, res) => {
 	}
 }
 
+// =================== CHECK AUTH =======================
 export const checkAuth = async (req, res) => {
 	try {
 		const user = await User.findById(req.userId).select("-password")
@@ -142,67 +125,3 @@ export const checkAuth = async (req, res) => {
 		res.status(400).json({ success: false, message: error.message })
 	}
 }
-
-// backend/controllers/authController.js
-
-// LOGIN : Connexion de l'administrateur de la boutique
-/* export const login = async (req, res) => { 
-    const { email, password } = req.body 
-    try { 
-        const user = await User.findOne({ email })
-        
-        if (!user) { 
-            return res.status(400).json({ success: false, message: "Identifiants invalides" })
-        } 
-        
-        const isPasswordValid = await bcryptjs.compare(password, user.password)
-        if (!isPasswordValid) { 
-            return res.status(400).json({ success: false, message: "Identifiants invalides" })
-        } 
-        
-        // Génère le JWT et le place dans un cookie HTTP-only (sécurisé)
-        generateTokenAndSetCookie(res, user._id)
-
-        // Optionnel: Mettre à jour la date de dernière connexion (si tu as ce champ dans ton modèle User)
-        // user.lastLogin = new Date()
-        // await user.save()
-
-        res.status(200).json({ 
-            success: true, 
-            message: "Connexion réussie", 
-            user: { 
-                _id: user._id,
-                email: user.email,
-                role: user.role
-                // On évite d'envoyer tout le document (_doc) pour plus de sécurité et de clarté
-            } 
-        })
-    } catch (error) { 
-        console.error("Erreur dans login: ", error)
-        // Il est préférable de ne pas renvoyer error.message au client en production
-        res.status(500).json({ success: false, message: "Erreur serveur lors de la connexion" })
-    } 
-}
-
-// LOGOUT : Déconnexion de l'administrateur
-export const logout = async (req, res) => { 
-    res.clearCookie("token")
-    res.status(200).json({ success: true, message: "Déconnexion réussie" })
-}
-
-// CHECK_AUTH : Vérifie si le cookie/token est toujours valide au rechargement (pour le Front React)
-export const checkAuth = async (req, res) => {
-    try {
-        // req.userId doit être injecté par un middleware (ex: protectRoute) qui vérifie le cookie au préalable
-        const user = await User.findById(req.userId).select("-password")
-        
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Utilisateur non trouvé" })
-        }
-
-        res.status(200).json({ success: true, user })
-    } catch (error) {
-        console.error("Erreur dans checkAuth: ", error)
-        res.status(500).json({ success: false, message: "Erreur serveur lors de la vérification" })
-    }
-} */
