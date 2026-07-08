@@ -3,52 +3,15 @@
 import nodemailer from "nodemailer"
 import dotenv from "dotenv"
 dotenv.config()
-import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from '../templates/emailTemplate.js'
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from '../templates/emailTemplate.js'
 
 export const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    pass: process.env.EMAIL_PASS,
   },
 })
-
-export const sendVerificationEmail = async (email, verificationToken) => {
-  try {
-    const response = await transporter.sendMail({
-      from: `"Tesnim" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Verify your email",
-      html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
-    })
-
-    console.log("Email sent successfully", response.messageId)
-  } catch (error) {
-    console.error(`Error sending verification email`, error)
-    throw new Error(`Error sending verification email: ${error}`)
-  }
-}
-
-export const sendWelcomeEmail = async (email, name) => {
-  try {
-    const htmlContent = `
-      <h1>Welcome ${name}!</h1>
-      <p>Thanks for joining us at Auth Company!</p>
-    `
-
-    const response = await transporter.sendMail({
-      from: `"Tesnim" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Welcome!",
-      html: htmlContent,
-    })
-
-    console.log("Welcome email sent successfully", response.messageId)
-  } catch (error) {
-    console.error("Error sending welcome email", error)
-    throw new Error(`Error sending welcome email: ${error}`)
-  }
-}
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
   try {

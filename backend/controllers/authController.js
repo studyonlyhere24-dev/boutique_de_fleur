@@ -5,38 +5,107 @@ import crypto from 'crypto'
 import Client from '../models/clientModel.js'
 import Admin from '../models/adminModel.js'
 import { generateTokenAndSetCookie } from '../utils/generateToken.js'
-import { sendVerificationEmail,sendPasswordResetEmail,sendWelcomeEmail ,sendResetSuccessEmail} from '../services/emailService.js'
+import { sendPasswordResetEmail ,sendResetSuccessEmail} from '../services/emailService.js'
+
+// =================== SIGNUP =======================
+export const signup = async (req, res) => {
+    const { email, password, name, address, phone } = req.body 
+
+    try {
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "L'email et le mot de passe sont requis" }) 
+        }
+
+        const isAdmin = email.endsWith('@admin.com') 
+        const TargetModel = isAdmin ? Admin : Client 
+
+        if (!isAdmin) {
+            if (!name || !address) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Le nom et l'adresse sont obligatoires pour un client" 
+                }) 
+            }
+        }
+
+        const userAlreadyExists = await TargetModel.findOne({ email })  
+        if (userAlreadyExists) {
+            return res.status(400).json({ success: false, message: "Cet utilisateur existe déjà" }) 
+        }
+
+        const hashedPassword = await bcryptjs.hash(password, 10) 
+
+        let newUser 
+
+        if (isAdmin) {
+            newUser = new Admin({
+                email,
+                password: hashedPassword
+            }) 
+        } else {
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString() 
+            
+            newUser = new Client({
+                email,
+                password: hashedPassword,
+                name,
+                address,
+                phone,
+                verificationToken,
+                verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
+            }) 
+        }
+
+        await newUser.save() 
+
+        generateTokenAndSetCookie(res, newUser._id)  
+
+        const userResponse = { ...newUser._doc } 
+        delete userResponse.password  
+
+        res.status(201).json({
+            success: true,
+            message: `${isAdmin ? 'Administrateur' : 'Client'} créé avec succès`,
+            user: userResponse
+        }) 
+
+    } catch (error) {
+        console.error("Erreur dans signup: ", error) 
+        return res.status(500).json({ success: false, message: "Erreur serveur lors de l'inscription" }) 
+    }
+} 
 
 // =================== LOGIN =======================
 export const login = async (req, res) => { 
-    const { email, password } = req.body;
+    const { email, password } = req.body 
 
     try { 
-        let user = null;
-        let role = '';
+        let user = null 
+        let role = '' 
 
         if (email.endsWith('@admin.com')) {
-            user = await Admin.findOne({ email });
-            role = 'admin';
+            user = await Admin.findOne({ email }) 
+            role = 'admin' 
         } else {
-            user = await Client.findOne({ email });
-            role = 'client';
+            user = await Client.findOne({ email }) 
+            role = 'client' 
         }
 
         if (!user) { 
-            return res.status(400).json({ success: false, message: "Identifiants invalides" });
+            return res.status(400).json({ success: false, message: "Identifiants invalides" }) 
         } 
         
-        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        const isPasswordValid = await bcryptjs.compare(password, user.password) 
         if (!isPasswordValid) { 
-            return res.status(400).json({ success: false, message: "Identifiants invalides" });
+            return res.status(400).json({ success: false, message: "Identifiants invalides" }) 
         } 
         
-        generateTokenAndSetCookie(res, user._id);
+        generateTokenAndSetCookie(res, user._id) 
 
         if (role === 'client' && user.lastLogin) {
-            user.lastLogin = new Date();
-            await user.save();
+            user.lastLogin = new Date() 
+            await user.save() 
         }
 
         res.status(200).json({ 
@@ -47,11 +116,11 @@ export const login = async (req, res) => {
                 email: user.email,
                 role: role
             } 
-        });
+        }) 
 
     } catch (error) { 
-        console.error("Erreur lors de la connexion : ", error);
-        res.status(500).json({ success: false, message: "Erreur serveur" });
+        console.error("Erreur lors de la connexion : ", error) 
+        res.status(500).json({ success: false, message: "Erreur serveur" }) 
     } 
 }
 

@@ -29,7 +29,7 @@ export const isAdmin = async (req, res, next) => {
         
         next()
     } catch (error) {
-        console.log("Error in isAdmin ", error);
+        console.log("Error in isAdmin ", error) 
         return res.status(500).json({ success: false, message: "Server error" })
     }
 }
