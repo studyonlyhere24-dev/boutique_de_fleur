@@ -1,122 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState } from 'react';
+import { BrowserRouter } from 'react-router-dom'; // 👈 Ajout du Router pour réparer la Navbar
+import Navbar from './components/Navbar';
+import Catalog from './features/catalog/Catalog';
+import SidebarCart from './features/cart/SidebarCart';
+import StickyCartBanner from './features/cart/StickyCartBanner';
+import Login from './features/auth/Login';
+import AdminDashboard from './features/admin/AdminDashboard';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  // Gestion de l'affichage du panier latéral
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Liaison API : Rôle de l'utilisateur connecté ('client', 'admin', ou null)
+  const [userRole, setUserRole] = useState(null);
+  
+  // État pour savoir si on affiche la page de connexion ou le catalogue
+  const [currentPage, setCurrentPage] = useState('catalog'); // 'catalog', 'login' ou 'admin-dashboard'
+
+  // Fonction appelée lors d'une authentification réussie depuis Login.jsx
+  const handleLoginSuccess = (role) => {
+    setUserRole(role); // On enregistre si c'est un 'admin' ou un 'client'
+    
+    if (role === 'admin') {
+      setCurrentPage('admin-dashboard'); // 🚀 Redirection automatique du Super-Admin
+    } else {
+      setCurrentPage('catalog'); // Redirection du client vers la boutique
+    }
+  };
+
+  const handleLogout = () => {
+    setUserRole(null);
+    setCurrentPage('catalog');
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    // 👈 On enveloppe tout le code dans <BrowserRouter> pour fournir le contexte à la Navbar
+    <BrowserRouter> 
+      <div className="min-h-screen bg-white text-dark antialiased">
+        {/* Barre de navigation globale */}
+        <Navbar 
+          onOpenCart={() => setIsCartOpen(true)} 
+          userRole={userRole}
+          onLogout={handleLogout}
+          onNavigate={(page) => setCurrentPage(page)}
+        />
 
-      <div className="ticks"></div>
+        {/* RENDER DYNAMIQUE DE LA PAGE SELON LE RÔLE */}
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+          {currentPage === 'catalog' && (
+            <Catalog onOpenCart={() => setIsCartOpen(true)} />
+          )}
+          
+          {currentPage === 'login' && (
+            <Login onLoginSuccess={handleLoginSuccess} />
+          )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {currentPage === 'admin-dashboard' && userRole === 'admin' && (
+            <AdminDashboard />
+          )}
+        </main>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Composants d'interface du panier */}
+        <SidebarCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        <StickyCartBanner onOpenCart={() => setIsCartOpen(true)} />
+      </div>
+    </BrowserRouter>
+  );
 }
-
-export default App

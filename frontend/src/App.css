@@ -1,3 +1,21 @@
+/* ─── 1. LE BOUCLIER ANTI-DEBORDEMENT MOBILE ─── */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  /* 🔓 Libéré ! Pas de max-width ni d'overflow ici pour permettre à la Navbar de coller au scroll */
+}
+*, ::before, ::after {
+  box-sizing: inherit;
+}
+#root {
+  min-height: 100vh;
+  width: 100%;
+  /* 🛡️ Le bouclier anti-espace blanc à droite est déplacé ici uniquement */
+  overflow-x: hidden; 
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -17,8 +35,10 @@
   }
 }
 
+/* ─── 2. NETTOYAGE ET ADAPTATION DU HERO ─── */
 .hero {
   position: relative;
+  max-width: 100%; /* Évite que le bloc ne dépasse */
 
   .base,
   .framework,
@@ -31,6 +51,8 @@
     width: 170px;
     position: relative;
     z-index: 0;
+    max-width: 100%;
+    height: auto;
   }
 
   .framework,
@@ -42,8 +64,15 @@
     z-index: 1;
     top: 34px;
     height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg) scale(1.4);
+    
+    /* 📱 Désactive la rotation 3D trop large sur mobile */
+    @media (max-width: 768px) {
+      transform: none;
+      position: relative;
+      top: 0;
+      height: auto;
+    }
   }
 
   .vite {
@@ -51,8 +80,14 @@
     top: 107px;
     height: 26px;
     width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg) scale(0.8);
+    
+    /* 📱 Idem pour l'icône Vite */
+    @media (max-width: 768px) {
+      transform: none;
+      position: relative;
+      top: 0;
+    }
   }
 }
 
@@ -63,6 +98,7 @@
   place-content: center;
   place-items: center;
   flex-grow: 1;
+  max-width: 100%;
 
   @media (max-width: 1024px) {
     padding: 32px 20px 24px;
@@ -74,6 +110,7 @@
   display: flex;
   border-top: 1px solid var(--border);
   text-align: left;
+  max-width: 100%;
 
   & > div {
     flex: 1 1 0;

@@ -1,0 +1,226 @@
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../../store/cartSlice';
+import { Search, Plus } from 'lucide-react';
+
+// Liaison API : Ajout de la propriété 'stock' conforme au modèle Product 
+const MOCK_FLOWERS = [
+  { _id: "1", name: "Bouquet Pastel Élégant", price: 4500, category: "Roses", imageUrl: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80", description: "Un assortiment délicat de roses roses, blanches et d'eucalyptus frais.", stock: 5 },
+  { _id: "2", name: "Éclat de Tournesols", price: 3800, category: "Champêtre", imageUrl: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=600&q=80", description: "Apportez de la joie avec ce bouquet rayonnant de tournesols de saison.", stock: 0 }, // ❌ Simule une rupture de stock
+  { _id: "3", name: "Majestueux Lys Blancs", price: 6200, category: "Lys", imageUrl: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80", description: "Un bouquet pur et parfumé, idéal pour les grandes occasions.", stock: 12 },
+  { _id: "4", name: "Harmonie de Tulipes", price: 3200, category: "Saison", imageUrl: "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&q=80", description: "Un mélange coloré de tulipes fraîches pour célébrer le printemps.", stock: 2 }
+];
+
+export default function Catalog({ onOpenCart }) {
+  const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('Tous');
+
+  // États Atelier
+  const [base, setBase] = useState(1200);
+  const [flowerType, setFlowerType] = useState(2500);
+  const [size, setSize] = useState(1);
+
+  const customPrice = (base + flowerType) * size;
+
+  const handleAddCustomBouquet = () => {
+    const flowerNames = { 2500: "Roses Poudrées", 3500: "Pivoines Royales", 1800: "Fleurs Sauvages" };
+    const flowerImages = {
+      2500: "https://images.unsplash.com/photo-1533616688419-b7a585564566?w=400&q=80",
+      3500: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=400&q=80",
+      1800: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80"
+    };
+
+    dispatch(addItem({
+      _id: `custom-${Date.now()}`,
+      name: `Sur-mesure : ${flowerNames[flowerType]}`,
+      price: customPrice,
+      imageUrl: flowerImages[flowerType],
+      quantity: 1
+      // Note: Les bouquets personnalisés n'ont pas de stock prédéfini car créés à la volée
+    }));
+    onOpenCart();
+  };
+
+  const filteredFlowers = MOCK_FLOWERS.filter(flower => {
+    return flower.name.toLowerCase().includes(search.toLowerCase()) && (category === 'Tous' || flower.category === category);
+  });
+
+  return (
+    <div className="space-y-32">
+      
+      {/* ─── 1. HERO SECTION EDITORIALE ─── */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 min-h-[80vh] items-center gap-12 pt-4">
+        <div className="lg:col-span-7 h-[50vh] lg:h-[75vh] w-full relative overflow-hidden rounded-[2rem] shadow-sm ring-1 ring-sage-100">
+          <img src="https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=1200&q=80" alt="Atelier Floral Premium" className="h-full w-full object-cover object-center scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-sage-100/20 to-transparent"></div>
+        </div>
+        
+        <div className="lg:col-span-5 flex flex-col justify-center space-y-8 pr-4">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-sage-600 uppercase">
+            <span className="h-1.5 w-1.5 rounded-full bg-powder-500 animate-ping"></span> Maison Florale
+          </div>
+          <h1 className="font-serif text-5xl md:text-6xl font-light tracking-tight text-dark leading-[1.1]">
+            L'élégance à l'état <br />
+            <span className="italic font-normal text-powder-500 bg-gradient-to-r from-powder-500 to-sage-500 bg-clip-text text-transparent">premium.</span>
+          </h1>
+          <p className="text-base font-light leading-relaxed text-muted max-w-md">Des tiges sourcées avec passion, infusées de douceur et assemblées pour créer l'accord parfait.</p>
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <a href="#pret-a-vendre" className="inline-flex h-12 items-center justify-center rounded-full bg-sage-600 px-8 text-sm font-medium text-white transition-all hover:bg-sage-700 hover:shadow-lg hover:shadow-sage-500/10 active:scale-95">Découvrir la collection</a>
+            <a href="#sur-mesure" className="inline-flex h-12 items-center justify-center rounded-full border border-powder-100 bg-powder-100/20 px-8 text-sm font-medium text-powder-600 transition-colors hover:bg-powder-100/40">Ouvrir l'Atelier 🌸</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 2. L'ATELIER DE CREATION SUR-MESURE ─── */}
+      <section id="sur-mesure" className="max-w-5xl mx-auto space-y-12 scroll-mt-24">
+        <div className="text-center space-y-3">
+          <span className="text-xs font-bold tracking-widest text-sage-600 bg-sage-100 px-3 py-1 rounded-full uppercase">Atelier d'Artiste</span>
+          <h2 className="font-serif text-4xl font-medium text-dark">Façonnez votre poésie</h2>
+          <p className="text-sm font-light text-muted max-w-md mx-auto">Un mix parfait de nuances vertes et de textures poudrées.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+          <div className="md:col-span-7 bg-sage-100/30 rounded-[2rem] border border-sage-100 p-6 sm:p-8 space-y-8 flex flex-col justify-between">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">01. Fond de Verdure Sauvage</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button onClick={() => setBase(1200)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1200 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
+                    <span className="leading-tight">🌿 Feuillage Linéaire (+1 200 DA)</span>
+                  </button>
+                  <button onClick={() => setBase(1800)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1800 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
+                    <span className="leading-tight">🍃 Eucalyptus Premium (+1 800 DA)</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-powder-600">02. Cœur de Fleurs Rose Poésie</span>
+                <div className="flex flex-wrap gap-2.5 w-full">
+                  {[[2500, "Roses Blanches"], [3500, "Pivoines Poudrées"], [1800, "Fleurs Sauvages"]].map(([price, name]) => (
+                    <button key={price} onClick={() => setFlowerType(price)} className={`flex-1 min-w-[95px] sm:min-w-[110px] py-3 px-2 rounded-xl text-center text-xs transition-all border break-words ${flowerType === price ? 'border-powder-500 bg-white shadow-sm text-powder-600 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>{name}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">03. Envergure de la Composition</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => setSize(1)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Format Délicat</button>
+                  <button onClick={() => setSize(1.5)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1.5 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Majestueux (x1.5)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-5 bg-gradient-to-br from-sage-500 via-powder-500 to-powder-600 rounded-[2rem] p-8 flex flex-col justify-between text-center md:text-left shadow-xl shadow-powder-500/10 min-h-[280px]">
+            <div className="space-y-2">
+              <h3 className="font-serif text-3xl font-light text-white tracking-wide">Votre Signature</h3>
+              <p className="text-xs text-white/90 font-light">Une création sur-mesure confectionnée à la commande.</p>
+            </div>
+            <div className="py-6 md:py-0">
+              <span className="text-xs uppercase tracking-widest text-white/80 font-mono">Total à l'Atelier</span>
+              <p className="text-4xl font-bold tracking-tight text-white mt-1">{customPrice.toLocaleString('fr-FR')} DA</p>
+            </div>
+            <button onClick={handleAddCustomBouquet} className="w-full h-12 rounded-xl bg-white text-sage-800 font-bold text-sm shadow-md transition-all hover:bg-powder-100 hover:text-powder-700 active:scale-98 mt-4 md:mt-0">Ajouter ma création au panier</button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 3. CATALOGUE MINIMALISTE ─── */}
+      <section id="pret-a-vendre" className="space-y-12 scroll-mt-24">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between border-b border-gray-100 pb-6 gap-6">
+          <div className="space-y-1">
+            <h2 className="font-serif text-3xl font-medium text-dark">Les Prêts-à-Emporter</h2>
+            <p className="text-sm font-light text-muted">Créations exclusives prêtes à fleurir votre intérieur.</p>
+          </div>
+          
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted" />
+              <input type="text" placeholder="Rechercher une tige..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 w-full rounded-full border border-gray-200 pl-9 pr-4 text-xs focus:border-sage-500 focus:outline-none sm:w-48 bg-transparent" />
+            </div>
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className="h-10 rounded-full border border-gray-200 px-4 text-xs focus:border-sage-500 focus:outline-none bg-transparent cursor-pointer text-muted">
+              <option value="Tous">Toutes les collections</option>
+              <option value="Roses">Collection Roses</option>
+              <option value="Champêtre">Esprit Champêtre</option>
+              <option value="Lys">Les Lys d'Exception</option>
+              <option value="Saison">Fleurs de Saison</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Grille */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
+          {filteredFlowers.map(flower => {
+            // 💡 Gestion API : Vérification de l'état du stock 
+            const isOutOfStock = flower.stock === 0;
+
+            return (
+              <div key={flower._id} className="group relative flex flex-col space-y-4">
+                <div className="w-full aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-surface ring-1 ring-gray-100 relative">
+                  <img src={flower.imageUrl} alt={flower.name} className={`h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`} />
+                  
+                  {/* Badge Rupture de stock si stock === 0  */}
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
+                        Rupture
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col flex-1 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-serif text-lg font-medium text-dark tracking-tight">{flower.name}</h3>
+                    <span className="font-semibold text-sage-600 whitespace-nowrap">
+                      {flower.price.toLocaleString('fr-FR')} DA
+                    </span>
+                  </div>
+                  
+                  {/* Affichage informatif du stock restant  */}
+                  <div className="flex items-center gap-1.5">
+                    {isOutOfStock ? (
+                      <span className="text-[10px] font-medium text-rose-500">Victime de son succès</span>
+                    ) : flower.stock <= 3 ? (
+                      <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md animate-pulse">
+                        Plus que {flower.stock} disponibles !
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-light text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                        En stock
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs font-light text-muted line-clamp-2 leading-relaxed">{flower.description}</p>
+                  
+                  {/* Bouton désactivé et re-stylisé si rupture de stock  */}
+                  <div className="pt-2">
+                    <button 
+                      disabled={isOutOfStock}
+                      onClick={() => {
+                        dispatch(addItem(flower));
+                        onOpenCart();
+                      }}
+                      className={`w-full inline-flex h-9 items-center justify-center rounded-xl border text-xs font-semibold transition-all ${
+                        isOutOfStock 
+                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'border-powder-100 bg-powder-100/20 text-powder-600 hover:bg-powder-500 hover:text-white hover:border-powder-500'
+                      }`}
+                    >
+                      {isOutOfStock ? 'Indisponible' : <><Plus className="mr-1 h-3 w-3" /> Sélectionner ce bouquet</>}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+    </div>
+  );
+}
