@@ -1,4 +1,4 @@
-//backend/routes/authRoute.js
+//backend/routes/authRoutes.js
 
 import express from 'express'
 import { signup, login, logout, forgotPassword, resetPassword, checkAuth } from '../controllers/authController.js'

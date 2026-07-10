@@ -135,7 +135,7 @@ export const logout = async (req, res) => {
 export const forgotPassword = async(req,res)=>{
     const { email } = req.body
 	try {
-		const user = await User.findOne({ email })
+		const user = await Client.findOne({ email })
 
 		if (!user) {
 			return res.status(400).json({ success: false, message: "User not found" })
@@ -158,7 +158,7 @@ export const resetPassword = async (req, res) => {
 	try {
 		const { token } = req.params
 		const { password } = req.body
-		const user = await User.findOne({
+		const user = await Client.findOne({
 			resetPasswordToken: token,
 			resetPasswordExpiresAt: { $gt: Date.now() },
 		})
@@ -181,11 +181,17 @@ export const resetPassword = async (req, res) => {
 }
 
 // =================== CHECK AUTH =======================
+
 export const checkAuth = async (req, res) => {
 	try {
-		const user = await User.findById(req.userId).select("-password")
+		let user = await Admin.findById(req.userId).select("-password")
+        
+        if (!user) {
+            user = await Client.findById(req.userId).select("-password")
+        }
+
 		if (!user) {
-			return res.status(400).json({ success: false, message: "User not found" })
+			return res.status(400).json({ success: false, message: "Utilisateur non trouvé" })
 		}
 
 		res.status(200).json({ success: true, user })
