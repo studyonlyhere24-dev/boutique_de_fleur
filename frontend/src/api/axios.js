@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000', // 💡 L'adresse du serveur Node.js de ton amie
+  baseURL: 'http://localhost:4000', // 💡 L'adresse du serveur Node.js de ton amie
   withCredentials: true,             // 🔑 CRUCIAL : Permet l'envoi et la réception automatique des cookies/JWT
   headers: {
     'Content-Type': 'application/json',

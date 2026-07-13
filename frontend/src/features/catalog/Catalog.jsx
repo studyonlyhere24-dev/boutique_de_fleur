@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'; // 💡 Ajout de useEffect
+import { useState, useEffect } from 'react'; 
 import { useDispatch } from 'react-redux';
 import { addItem } from '../../store/cartSlice';
 import { Search, Plus } from 'lucide-react';
-import api from '../../api/axios'; // 💡 Import de notre instance Axios connectée au Backend
+import api from '../../api/axios'; 
 
 export default function Catalog({ onOpenCart }) {
   const dispatch = useDispatch();
-  const [flowers, setFlowers] = useState([]); // 💡 Remplacera le MOCK_FLOWERS
-  const [isLoading, setIsLoading] = useState(true); // État de chargement de l'API
+  const [flowers, setFlowers] = useState([]); // Initialisé avec un tableau vide
+  const [isLoading, setIsLoading] = useState(true); 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Tous');
 
@@ -16,15 +16,26 @@ export default function Catalog({ onOpenCart }) {
   const [flowerType, setFlowerType] = useState(2500);
   const [size, setSize] = useState(1);
 
-  // ─── API : CHARGEMENT DU CATALOGUE DEPUIS LE BACKEND ───
+  // ─── API : CHARGEMENT ET PROTECTION DU CATALOGUE ───
   useEffect(() => {
     const fetchFlowers = async () => {
       try {
         setIsLoading(true);
         const response = await api.get('/api/products');
-        setFlowers(response.data);
+        
+        // 💡 SÉCURITÉ : On vérifie si la BDD renvoie bien un tableau direct
+        if (Array.isArray(response.data)) {
+          setFlowers(response.data);
+        } else if (response.data && Array.isArray(response.data.products)) {
+          // Au cas où ta copine a encapsulé son tableau dans un objet { products: [...] }
+          setFlowers(response.data.products);
+        } else {
+          console.error("Format de données inconnu :", response.data);
+          setFlowers([]); // Fallback sécurisé
+        }
       } catch (err) {
         console.error("Impossible de récupérer les fleurs du catalogue :", err);
+        setFlowers([]); // Fallback en cas d'erreur réseau
       } finally {
         setIsLoading(false);
       }
@@ -53,9 +64,12 @@ export default function Catalog({ onOpenCart }) {
     onOpenCart();
   };
 
-  // Filtrage basé sur les données réelles reçues de l'API
-  const filteredFlowers = flowers.filter(flower => {
-    return flower.name.toLowerCase().includes(search.toLowerCase()) && (category === 'Tous' || flower.category === category);
+  // 💡 SÉCURITÉ : Filtrage tolérant qui ne crachera jamais, même si flowers n'est pas prêt
+  const safeFlowers = Array.isArray(flowers) ? flowers : [];
+  const filteredFlowers = safeFlowers.filter(flower => {
+    if (!flower || !flower.name) return false;
+    return flower.name.toLowerCase().includes(search.toLowerCase()) && 
+           (category === 'Tous' || flower.category === category);
   });
 
   // Écran d'attente pendant que l'API répond
@@ -174,70 +188,75 @@ export default function Catalog({ onOpenCart }) {
         </div>
 
         {/* Grille de fleurs réelles */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredFlowers.map(flower => {
-            const isOutOfStock = flower.stock === 0;
+        {filteredFlowers.length === 0 ? (
+          <div className="text-center py-12 text-muted font-light italic">
+            Aucun bouquet ne correspond à votre recherche.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
+            {filteredFlowers.map(flower => {
+              const isOutOfStock = flower.stock === 0;
 
-            return (
-              <div key={flower._id} className="group relative flex flex-col space-y-4">
-                <div className="w-full aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-surface ring-1 ring-gray-100 relative">
-                  <img src={flower.imageUrl} alt={flower.name} className={`h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`} />
-                  
-                  {isOutOfStock && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
-                        Rupture
-                      </span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex flex-col flex-1 space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-serif text-lg font-medium text-dark tracking-tight">{flower.name}</h3>
-                    <span className="font-semibold text-sage-600 whitespace-nowrap">
-                      {flower.price.toLocaleString('fr-FR')} DA
-                    </span>
-                  </div>
-                  
-                  {/* Gestion dynamique de l'état des stocks réels */}
-                  <div className="flex items-center gap-1.5">
-                    {isOutOfStock ? (
-                      <span className="text-[10px] font-medium text-rose-500">Victime de son succès</span>
-                    ) : flower.stock <= 3 ? (
-                      <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md animate-pulse">
-                        Plus que {flower.stock} disponibles !
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-light text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        En stock
-                      </span>
+              return (
+                <div key={flower._id} className="group relative flex flex-col space-y-4">
+                  <div className="w-full aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-surface ring-1 ring-gray-100 relative">
+                    <img src={flower.imageUrl} alt={flower.name} className={`h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`} />
+                    
+                    {isOutOfStock && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
+                          Rupture
+                        </span>
+                      </div>
                     )}
                   </div>
-
-                  <p className="text-xs font-light text-muted line-clamp-2 leading-relaxed">{flower.description}</p>
                   
-                  <div className="pt-2">
-                    <button 
-                      disabled={isOutOfStock}
-                      onClick={() => {
-                        dispatch(addItem(flower));
-                        onOpenCart();
-                      }}
-                      className={`w-full inline-flex h-9 items-center justify-center rounded-xl border text-xs font-semibold transition-all ${
-                        isOutOfStock 
-                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                          : 'border-powder-100 bg-powder-100/20 text-powder-600 hover:bg-powder-500 hover:text-white hover:border-powder-500'
-                      }`}
-                    >
-                      {isOutOfStock ? 'Indisponible' : <><Plus className="mr-1 h-3 w-3" /> Sélectionner ce bouquet</>}
-                    </button>
+                  <div className="flex flex-col flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-serif text-lg font-medium text-dark tracking-tight">{flower.name}</h3>
+                      <span className="font-semibold text-sage-600 whitespace-nowrap">
+                        {flower.price ? flower.price.toLocaleString('fr-FR') : 0} DA
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1.5">
+                      {isOutOfStock ? (
+                        <span className="text-[10px] font-medium text-rose-500">Victime de son succès</span>
+                      ) : flower.stock <= 3 ? (
+                        <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md animate-pulse">
+                          Plus que {flower.stock} disponibles !
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-light text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                          En stock
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs font-light text-muted line-clamp-2 leading-relaxed">{flower.description}</p>
+                    
+                    <div className="pt-2">
+                      <button 
+                        disabled={isOutOfStock}
+                        onClick={() => {
+                          dispatch(addItem(flower));
+                          onOpenCart();
+                        }}
+                        className={`w-full inline-flex h-9 items-center justify-center rounded-xl border text-xs font-semibold transition-all ${
+                          isOutOfStock 
+                            ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                            : 'border-powder-100 bg-powder-100/20 text-powder-600 hover:bg-powder-500 hover:text-white hover:border-powder-500'
+                        }`}
+                      >
+                        {isOutOfStock ? 'Indisponible' : <><Plus className="mr-1 h-3 w-3" /> Sélectionner ce bouquet</>}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
     </div>

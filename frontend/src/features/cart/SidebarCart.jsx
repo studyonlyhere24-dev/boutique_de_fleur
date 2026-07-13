@@ -33,7 +33,7 @@ export default function SidebarCart({ isOpen, onClose }) {
       setIsSubmitting(true);
       
       // Envoi de la commande par requête HTTP POST au backend Node.js
-      await api.post('/api/orders', orderPayload);
+      await api.post('/api/orders/createorder', orderPayload);
       
       // Si le serveur répond 200/201 (Succès) :
       alert("✨ Commande validée avec succès ! Vos artisans fleuristes préparent votre bouquet.");
