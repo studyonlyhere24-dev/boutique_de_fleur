@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, Lock, Mail, Eye, EyeOff, ShieldCheck, User, ArrowLeft } from 'lucide-react';
-
+import api from '../../api/axios';
 export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,46 +12,44 @@ export default function Login({ onLoginSuccess }) {
   // États de bascule pour l'API
   const [isAdmin, setIsAdmin] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false); // 💡 Nouveau : Mode mot de passe oublié
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setSuccessMessage('');
+  setIsLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-    setIsLoading(true);
-
-    try {
-      if (isForgotPassword) {
-        // ─── MODE MOT DE PASSE OUBLIÉ (Liaison API) ───
-        // C'est ici qu'on appelle la route de réinitialisation (ex: /api/client/forgot-password)
-        console.log(`Demande de réinitialisation de mot de passe pour : ${email}`);
-        
-        setTimeout(() => {
-          setIsLoading(false);
-          setSuccessMessage('Un e-mail de réinitialisation contenant votre lien unique vous a été envoyé.');
-        }, 1200);
-
-      } else {
-        // ─── MODE CONNEXION CLASSIQUE ───
-        if (isAdmin && password.length < 6) {
-          setError('Le mot de passe administrateur doit contenir au moins 6 caractères.');
-          setIsLoading(false);
-          return;
-        }
-
-        const credentials = { email, password };
-        console.log(`Tentative de connexion [${isAdmin ? 'ADMIN' : 'CLIENT'}] avec :`, credentials);
-        
-        setTimeout(() => {
-          setIsLoading(false);
-          if (onLoginSuccess) onLoginSuccess();
-        }, 1000);
+  try {
+    if (isForgotPassword) {
+      // ─── API : MOT DE PASSE OUBLIÉ ───
+      const response = await api.post('/api/client/forgot-password', { email });
+      setSuccessMessage(response.data.message || 'Un e-mail de récupération a été envoyé.');
+      setIsLoading(false);
+    } else {
+      // ─── API : CONNEXION CLASSIQUE ───
+      if (isAdmin && password.length < 6) {
+        setError('Le mot de passe administrateur doit contenir au moins 6 caractères.');
+        setIsLoading(false);
+        return;
       }
 
-    } catch (err) {
+      // On cible la bonne route selon l'onglet actif
+      const targetRoute = isAdmin ? '/api/admin/login' : '/api/client/login';
+      
+     await api.post(targetRoute, { email, password });
+      
+      // Si le serveur répond avec succès, le cookie est déjà enregistré par le navigateur !
       setIsLoading(false);
-      setError(err.response?.data?.message || 'Une erreur est survenue.');
+      if (onLoginSuccess) {
+        onLoginSuccess(isAdmin ? 'admin' : 'client');
+      }
     }
-  };
+  } catch (err) {
+    setIsLoading(false);
+    // On récupère le message d'erreur renvoyé par son modèle Node.js
+    setError(err.response?.data?.message || 'Identifiants incorrects ou problème de serveur.');
+  }
+};
+ 
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">

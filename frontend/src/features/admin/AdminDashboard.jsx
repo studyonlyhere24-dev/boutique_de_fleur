@@ -1,46 +1,33 @@
-import React, { useState } from 'react';
-import { Package, ShoppingCart, RefreshCw, AlertTriangle, CheckCircle2, Truck, XCircle, Clock } from 'lucide-react';
-
-// 💡 MOCK DES COMMANDES (Basé exactement sur le modèle Order de ton amie)
-const MOCK_ORDERS = [
-  {
-    _id: "65f1a2b3c4d5e6f7a8b90123",
-    clientName: "Sofiane Benz", // Jointure simulée avec le modèle Client
-    totalAmount: 12500,
-    status: "pending", // 'pending', 'confirmed', 'shipped', 'cancelled'
-    createdAt: "2026-07-09T14:30:00.000Z", // Format ISO 8601 demandé
-    itemsCount: 3
-  },
-  {
-    _id: "65f1a2b3c4d5e6f7a8b90124",
-    clientName: "Amel Rahmani",
-    totalAmount: 4500,
-    status: "confirmed",
-    createdAt: "2026-07-08T09:15:00.000Z",
-    itemsCount: 1
-  },
-  {
-    _id: "65f1a2b3c4d5e6f7a8b90125",
-    clientName: "Yanis Merad",
-    totalAmount: 8200,
-    status: "shipped",
-    createdAt: "2026-07-07T18:00:00.000Z",
-    itemsCount: 2
-  }
-];
-
-// 💡 MOCK DES PRODUITS (Basé exactement sur le modèle Product)
-const MOCK_PRODUCTS = [
-  { _id: "1", name: "Bouquet Pastel Élégant", price: 4500, category: "Roses", stock: 5 },
-  { _id: "2", name: "Éclat de Tournesols", price: 3800, category: "Champêtre", stock: 0 }, // Rupture !
-  { _id: "3", name: "Majestueux Lys Blancs", price: 6200, category: "Lys", stock: 12 },
-  { _id: "4", name: "Harmonie de Tulipes", price: 3200, category: "Saison", stock: 2 }
-];
+import { useState, useEffect } from 'react'; // 💡 Ajout de useEffect ici
+import { Package, ShoppingCart, AlertTriangle, CheckCircle2, Truck, XCircle, Clock } from 'lucide-react';
+import api from '../../api/axios';
 
 export default function AdminDashboard() {
-  const [orders, setOrders] = useState(MOCK_ORDERS);
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' ou 'products'
+  const [isLoading, setIsLoading] = useState(true);
+
+  // ─── API : CHARGEMENT INITIAL DES DONNÉES DU BACKEND ───
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        setIsLoading(true); // 💡 On active l'écran de chargement
+        const [ordersRes, productsRes] = await Promise.all([
+          api.get('/api/orders'),
+          api.get('/api/products')
+        ]);
+        setOrders(ordersRes.data);
+        setProducts(productsRes.data);
+      } catch (err) {
+        console.error("Erreur lors du chargement des données de l'API", err);
+      } finally {
+        setIsLoading(false); // 💡 On éteint le chargement, ESLint est content !
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   // 💡 Point technique 1 : Formatage des dates ISO 8601 en français
   const formatDate = (isoString) => {
@@ -53,22 +40,45 @@ export default function AdminDashboard() {
     });
   };
 
-  // Modification du statut d'une commande (Enregistrement en BDD via API plus tard)
-  const handleStatusChange = (orderId, newStatus) => {
-    setOrders(orders.map(order => 
-      order._id === orderId ? { ...order, status: newStatus } : order
-    ));
-    console.log(`API PUT /api/orders/${orderId} -> status: ${newStatus}`);
+  // Modification du statut d'une commande (Enregistrement en BDD via API)
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      // Met à jour la BDD de ton amie
+      await api.put(`/api/orders/${orderId}`, { status: newStatus });
+      
+      // Met à jour l'interface React visuellement
+      setOrders(orders.map(order => 
+        order._id === orderId ? { ...order, status: newStatus } : order
+      ));
+    } catch (err) {
+      alert("Impossible de modifier le statut : " + (err.response?.data?.message || err.message));
+    }
   };
 
   // Modification du stock d'un produit
-  const handleStockChange = (productId, newStock) => {
-    const value = Math.max(0, parseInt(newStock) || 0); // Contrainte : minimum 0
-    setProducts(products.map(prod => 
-      prod._id === productId ? { ...prod, stock: value } : prod
-    ));
-    console.log(`API PUT /api/products/${productId} -> stock: ${value}`);
+  const handleStockChange = async (productId, newStock) => {
+    const value = Math.max(0, parseInt(newStock) || 0);
+    try {
+      // Met à jour la BDD de ton amie
+      await api.put(`/api/products/${productId}`, { stock: value });
+      
+      // Met à jour l'interface React visuellement
+      setProducts(products.map(prod => 
+        prod._id === productId ? { ...prod, stock: value } : prod
+      ));
+    } catch (err) {
+      console.error("Erreur de mise à jour du stock", err);
+    }
   };
+
+  // 💡 Gestion de l'écran de chargement pendant que l'API répond
+  if (isLoading) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="h-8 w-8 border-4 border-sage-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   // Utilitaires de style pour les status (Enum)
   const getStatusBadge = (status) => {
@@ -142,7 +152,6 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-4 px-6">{getStatusBadge(order.status)}</td>
                       <td className="py-4 px-6 text-right">
-                        {/* Sélecteur d'action rapide pour l'admin */}
                         <div className="inline-flex gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
                           <button onClick={() => handleStatusChange(order._id, 'confirmed')} title="Confirmer / Préparer" className={`p-1.5 rounded-md transition-colors ${order.status === 'confirmed' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}><Clock className="h-3.5 w-3.5" /></button>
                           <button onClick={() => handleStatusChange(order._id, 'shipped')} title="Expédier au livreur" className={`p-1.5 rounded-md transition-colors ${order.status === 'shipped' ? 'bg-emerald-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}><Truck className="h-3.5 w-3.5" /></button>

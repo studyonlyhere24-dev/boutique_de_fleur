@@ -1,18 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // 💡 Ajout de useEffect
 import { useDispatch } from 'react-redux';
 import { addItem } from '../../store/cartSlice';
 import { Search, Plus } from 'lucide-react';
-
-// Liaison API : Ajout de la propriété 'stock' conforme au modèle Product 
-const MOCK_FLOWERS = [
-  { _id: "1", name: "Bouquet Pastel Élégant", price: 4500, category: "Roses", imageUrl: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80", description: "Un assortiment délicat de roses roses, blanches et d'eucalyptus frais.", stock: 5 },
-  { _id: "2", name: "Éclat de Tournesols", price: 3800, category: "Champêtre", imageUrl: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=600&q=80", description: "Apportez de la joie avec ce bouquet rayonnant de tournesols de saison.", stock: 0 }, // ❌ Simule une rupture de stock
-  { _id: "3", name: "Majestueux Lys Blancs", price: 6200, category: "Lys", imageUrl: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80", description: "Un bouquet pur et parfumé, idéal pour les grandes occasions.", stock: 12 },
-  { _id: "4", name: "Harmonie de Tulipes", price: 3200, category: "Saison", imageUrl: "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&q=80", description: "Un mélange coloré de tulipes fraîches pour célébrer le printemps.", stock: 2 }
-];
+import api from '../../api/axios'; // 💡 Import de notre instance Axios connectée au Backend
 
 export default function Catalog({ onOpenCart }) {
   const dispatch = useDispatch();
+  const [flowers, setFlowers] = useState([]); // 💡 Remplacera le MOCK_FLOWERS
+  const [isLoading, setIsLoading] = useState(true); // État de chargement de l'API
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Tous');
 
@@ -20,6 +15,22 @@ export default function Catalog({ onOpenCart }) {
   const [base, setBase] = useState(1200);
   const [flowerType, setFlowerType] = useState(2500);
   const [size, setSize] = useState(1);
+
+  // ─── API : CHARGEMENT DU CATALOGUE DEPUIS LE BACKEND ───
+  useEffect(() => {
+    const fetchFlowers = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/api/products');
+        setFlowers(response.data);
+      } catch (err) {
+        console.error("Impossible de récupérer les fleurs du catalogue :", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchFlowers();
+  }, []);
 
   const customPrice = (base + flowerType) * size;
 
@@ -32,19 +43,30 @@ export default function Catalog({ onOpenCart }) {
     };
 
     dispatch(addItem({
+      ...flowerImages,
       _id: `custom-${Date.now()}`,
       name: `Sur-mesure : ${flowerNames[flowerType]}`,
       price: customPrice,
       imageUrl: flowerImages[flowerType],
       quantity: 1
-      // Note: Les bouquets personnalisés n'ont pas de stock prédéfini car créés à la volée
     }));
     onOpenCart();
   };
 
-  const filteredFlowers = MOCK_FLOWERS.filter(flower => {
+  // Filtrage basé sur les données réelles reçues de l'API
+  const filteredFlowers = flowers.filter(flower => {
     return flower.name.toLowerCase().includes(search.toLowerCase()) && (category === 'Tous' || flower.category === category);
   });
+
+  // Écran d'attente pendant que l'API répond
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <div className="h-8 w-8 border-4 border-sage-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm font-light text-muted font-serif italic">Maison Florale charge ses plus belles tiges...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-32">
@@ -128,7 +150,7 @@ export default function Catalog({ onOpenCart }) {
         </div>
       </section>
 
-      {/* ─── 3. CATALOGUE MINIMALISTE ─── */}
+      {/* ─── 3. CATALOGUE SYNCHRONISÉ AVEC LE BACKEND ─── */}
       <section id="pret-a-vendre" className="space-y-12 scroll-mt-24">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between border-b border-gray-100 pb-6 gap-6">
           <div className="space-y-1">
@@ -151,10 +173,9 @@ export default function Catalog({ onOpenCart }) {
           </div>
         </div>
 
-        {/* Grille */}
+        {/* Grille de fleurs réelles */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
           {filteredFlowers.map(flower => {
-            // 💡 Gestion API : Vérification de l'état du stock 
             const isOutOfStock = flower.stock === 0;
 
             return (
@@ -162,7 +183,6 @@ export default function Catalog({ onOpenCart }) {
                 <div className="w-full aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-surface ring-1 ring-gray-100 relative">
                   <img src={flower.imageUrl} alt={flower.name} className={`h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105 ${isOutOfStock ? 'opacity-40 grayscale' : ''}`} />
                   
-                  {/* Badge Rupture de stock si stock === 0  */}
                   {isOutOfStock && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
@@ -180,7 +200,7 @@ export default function Catalog({ onOpenCart }) {
                     </span>
                   </div>
                   
-                  {/* Affichage informatif du stock restant  */}
+                  {/* Gestion dynamique de l'état des stocks réels */}
                   <div className="flex items-center gap-1.5">
                     {isOutOfStock ? (
                       <span className="text-[10px] font-medium text-rose-500">Victime de son succès</span>
@@ -197,7 +217,6 @@ export default function Catalog({ onOpenCart }) {
 
                   <p className="text-xs font-light text-muted line-clamp-2 leading-relaxed">{flower.description}</p>
                   
-                  {/* Bouton désactivé et re-stylisé si rupture de stock  */}
                   <div className="pt-2">
                     <button 
                       disabled={isOutOfStock}
