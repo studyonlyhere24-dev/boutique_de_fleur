@@ -44,16 +44,12 @@ export const signup = async (req, res) => {
                 password: hashedPassword
             }) 
         } else {
-            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString() 
-            
             newUser = new Client({
                 email,
                 password: hashedPassword,
                 name,
                 address,
                 phone,
-                verificationToken,
-                verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
             }) 
         }
 
@@ -181,7 +177,6 @@ export const resetPassword = async (req, res) => {
 }
 
 // =================== CHECK AUTH =======================
-
 export const checkAuth = async (req, res) => {
 	try {
 		let user = await Admin.findById(req.userId).select("-password")

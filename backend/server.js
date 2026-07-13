@@ -4,6 +4,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
+import clientRoutes from './routes/clientRoutes.js'
+import orderRoutes from './routes/orderRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 
 dotenv.config()
@@ -13,7 +15,10 @@ app.use(express.json())
 connectDB()
 
 app.use('/api/auth', authRoutes)
+app.use('/api/clients', clientRoutes)
+app.use('/api/orders', orderRoutes)
 app.use('/api/products', productRoutes)
+
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

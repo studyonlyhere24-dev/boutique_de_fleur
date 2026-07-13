@@ -2,34 +2,27 @@
 
 import jwt from "jsonwebtoken"
 import Admin from "../models/adminModel.js"
+import { UnauthenticatedError, UnauthorizedError } from "../errors/customErrors.js"
 
 export const verifyToken = (req, res, next) => {
 	const token = req.cookies.token
-	if (!token) return res.status(401).json({ success: false, message: "Unauthorized - no token provided" })
-	try {
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+	
+	if (!token) throw new UnauthenticatedError("Unauthorized - no token provided")
+	
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) 
 
-		if (!decoded) return res.status(401).json({ success: false, message: "Unauthorized - invalid token" })
+    if (!decoded) throw new UnauthenticatedError("Unauthorized - invalid token") 
 
-		req.userId = decoded.userId
-		next()
-	} catch (error) {
-		console.log("Error in verifyToken ", error)
-		return res.status(500).json({ success: false, message: "Server error" })
-	}
+    req.userId = decoded.userId 
+    next()
 }
 
 export const isAdmin = async (req, res, next) => {
-    try {
-        const admin = await Admin.findById(req.userId)
-        
-        if (!admin) {
-            return res.status(403).json({ success: false, message: "Accès refusé - Droits administrateur requis" })
-        }
-        
-        next()
-    } catch (error) {
-        console.log("Error in isAdmin ", error) 
-        return res.status(500).json({ success: false, message: "Server error" })
+    const admin = await Admin.findById(req.userId)
+    
+    if (!admin) {
+        throw new UnauthorizedError("Accès refusé - Droits administrateur requis") 
     }
+
+    next()
 }

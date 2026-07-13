@@ -12,10 +12,10 @@ router.post('/login', login)
 
 router.post('/logout', logout)
 
-router.post('/forgot-password', forgotPassword)
+router.post('/forgotpassword', forgotPassword)
 
-router.post("/reset-password/:token",resetPassword)
+router.post("/resetpassword/:token",resetPassword)
 
-router.get("/check-auth",verifyToken,checkAuth)
+router.get("/checkauth",verifyToken,checkAuth)
 
 export default router 

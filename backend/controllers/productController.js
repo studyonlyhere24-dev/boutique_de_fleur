@@ -1,77 +1,54 @@
 //backend/controllers/productController.js
 
 import Product from '../models/productModel.js'
+import { StatusCodes } from 'http-status-codes'
+import { NotFoundError, BadRequestError } from '../errors/customErrors.js'
 
 // ============================= GET ALL PRODUCTS =======================
 export const getAllProducts = async (req, res) => {
-    try {
-        const products = await Product.find({})
-        res.status(200).json({ success: true, products })
-    } catch (error) {
-        console.error("Erreur dans getProducts: ", error)
-        res.status(500).json({ success: false, message: "Erreur lors de la récupération des produits" })
-    }
+    const products = await Product.find({})
+    res.status(StatusCodes.OK).json({ success: true, products })
 }
 
 // ============================= GET PRODUCT BY ID =======================
 export const getProductById = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id)
-        
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Fleur introuvable" })
-        }
-        
-        res.status(200).json({ success: true, product })
-    } catch (error) {
-        console.error("Erreur dans getProductById: ", error)
-        res.status(500).json({ success: false, message: "Erreur serveur (ID invalide ?)" })
+    const product = await Product.findById(req.params.id)
+    
+    if (!product) {
+        throw new NotFoundError("Fleur introuvable")
     }
+    
+    res.status(StatusCodes.OK).json({ success: true, product })
 }
 
 // ============================= CREATE PRODUCT =======================
 export const createProduct = async (req, res) => {
-    try {
-        const product = await Product.create(req.body)
-        res.status(201).json({ success: true, message: "Produit ajouté au catalogue", product })
-    } catch (error) {
-        console.error("Erreur dans createProduct: ", error)
-        res.status(400).json({ success: false, message: error.message })
-    }
+    const product = await Product.create(req.body)
+    res.status(StatusCodes.CREATED).json({ success: true, message: "Produit ajouté au catalogue", product })
 }
 
 // ============================= UPDATE PRODUCT =======================
 export const updateProduct = async (req, res) => {
-    try {
-        const product = await Product.findByIdAndUpdate(
-            req.params.id, 
-            req.body, 
-            { new: true, runValidators: true }
-        )
+    const product = await Product.findByIdAndUpdate(
+        req.params.id, 
+        req.body, 
+        { new: true, runValidators: true }
+    )
 
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Produit introuvable pour la mise à jour" })
-        }
-
-        res.status(200).json({ success: true, message: "Produit mis à jour", product })
-    } catch (error) {
-        console.error("Erreur dans updateProduct: ", error)
-        res.status(400).json({ success: false, message: error.message })
+    if (!product) {
+        throw new NotFoundError("Produit introuvable pour la mise à jour")
     }
+
+    res.status(StatusCodes.OK).json({ success: true, message: "Produit mis à jour", product })
 }
 
 // ============================= DELETE PRODUCT =======================
 export const deleteProduct = async (req, res) => {
-    try {
-        const product = await Product.findByIdAndDelete(req.params.id)
+    const product = await Product.findByIdAndDelete(req.params.id)
 
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Produit introuvable" })
-        }
-
-        res.status(200).json({ success: true, message: "Produit définitivement supprimé" })
-    } catch (error) {
-        console.error("Erreur dans deleteProduct: ", error)
-        res.status(500).json({ success: false, message: "Erreur lors de la suppression" })
+    if (!product) {
+        throw new NotFoundError("Produit introuvable")
     }
+
+    res.status(StatusCodes.OK).json({ success: true, message: "Produit définitivement supprimé" })
 }
