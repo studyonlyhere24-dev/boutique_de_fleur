@@ -10,7 +10,7 @@ import clientRoutes from './routes/clientRoutes.js'
 import orderRoutes from './routes/orderRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
-import { NotFoundError } from './errors/index.js'
+import { NotFoundError } from './errors/customErrors.js'
 
 dotenv.config()
 
@@ -27,10 +27,10 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/clients', clientRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/products', productRoutes)
-
+/* 
 app.use('*', (req, res) => {
     throw new NotFoundError(`La route ${req.originalUrl} n'existe pas sur ce serveur`)
-})
+}) */
 
 app.use(errorHandlerMiddleware)
 

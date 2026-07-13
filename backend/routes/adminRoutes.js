@@ -2,7 +2,7 @@
 
 import express from 'express'
 import { getAllClients, getDashboardStats } from '../controllers/adminController.js'
-import { isAdmin, verifyToken } from '../middleware/authMiddleware.js'
+import { isAdmin, verifyToken } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 

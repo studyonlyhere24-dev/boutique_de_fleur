@@ -3,7 +3,7 @@
 import Client from '../models/clientModel.js' 
 import Order from '../models/orderModel.js' 
 import Product from '../models/productModel.js' 
-import sendOrderConfirmationEmail from '../utils/emailService.js' 
+import { sendOrderConfirmationEmail } from '../services/emailService.js' 
 import { StatusCodes } from 'http-status-codes'
 import { BadRequestError, NotFoundError } from '../errors/customErrors.js'
 

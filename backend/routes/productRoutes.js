@@ -2,7 +2,7 @@
 
 import express from 'express'
 import { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../controllers/productController.js'
-import { isAdmin } from '../middlewares/authMiddleware.js'
+import { verifyToken, isAdmin } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
