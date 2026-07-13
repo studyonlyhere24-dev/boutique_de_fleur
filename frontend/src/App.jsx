@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom'; // 👈 Ajout du Router pour réparer la Navbar
 import Navbar from './components/Navbar';
 import Catalog from './features/catalog/Catalog';
