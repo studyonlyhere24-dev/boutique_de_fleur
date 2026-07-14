@@ -14,7 +14,7 @@ export default function AdminDashboard() {
       try {
         setIsLoading(true); // 💡 On active l'écran de chargement
         const [ordersRes, productsRes] = await Promise.all([
-          api.get('/api/orders'),
+          api.get('/api/orders/all'),
           api.get('/api/products')
         ]);
         setOrders(ordersRes.data);

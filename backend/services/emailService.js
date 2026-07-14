@@ -1,6 +1,7 @@
 //backend/services/emailService.js
 
 import dotenv from "dotenv"
+import { transporter } from "../config/transporter.js"
 dotenv.config()
 import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_CONFIRMATION_TEMPLATE } from '../templates/emailTemplate.js'
 

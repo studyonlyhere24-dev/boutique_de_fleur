@@ -7,11 +7,11 @@ import { upload } from '../middlewares/uploadMiddleware.js'
 
 const router = express.Router()
 
-router.get('/', getAllProducts)
+router.get('/all', getAllProducts)
 
 router.get('/:id', getProductById)
 
-router.post('/', verifyToken, isAdmin, upload.single('imageUrl'), createProduct)
+router.post('/create', verifyToken, isAdmin, upload.single('imageUrl'), createProduct)
 
 router.patch('/:id', verifyToken, isAdmin, upload.single('imageUrl'), updateProduct)
 

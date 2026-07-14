@@ -6,12 +6,12 @@ import { verifyToken, isAdmin } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
-router.post('/createorder', verifyToken, createOrder) 
+router.post('/create', verifyToken, createOrder) 
 
-router.get('/getmyorders', verifyToken, getMyOrders) 
+router.get('/mine', verifyToken, getMyOrders) 
 
-router.get('/getallorders', verifyToken, getAllOrders) 
+router.get('/all', verifyToken, isAdmin, getAllOrders) 
 
-router.put('/orders/:id/status', verifyToken, isAdmin, updateOrderStatus) 
+router.put('/:id/status', verifyToken, isAdmin, updateOrderStatus) 
 
 export default router
