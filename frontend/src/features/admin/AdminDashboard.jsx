@@ -9,13 +9,13 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   // ─── API : CHARGEMENT INITIAL DES DONNÉES DU BACKEND ───
-  useEffect(() => {
+/*   useEffect(() => {
     const fetchAdminData = async () => {
       try {
         setIsLoading(true); // 💡 On active l'écran de chargement
         const [ordersRes, productsRes] = await Promise.all([
           api.get('/api/orders/all'),
-          api.get('/api/products')
+          api.get('/api/products/all')
         ]);
         setOrders(ordersRes.data);
         setProducts(productsRes.data);
@@ -27,7 +27,37 @@ export default function AdminDashboard() {
     };
 
     fetchAdminData();
+  }, []); */
+
+useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        setIsLoading(true); 
+        const [ordersRes, productsRes] = await Promise.all([
+          api.get('/api/orders/all'),
+          api.get('/api/products/all') // Correction de la route pour correspondre à productRoutes.js
+        ]);
+        
+        // On s'assure d'extraire les tableaux (vérifie le nom exact des propriétés renvoyées par ton back-end)
+        // Si ton API renvoie directement un tableau, garde .data. Sinon, pointe vers .data.orders / .data.products
+        const dataOrders = Array.isArray(ordersRes.data) ? ordersRes.data : ordersRes.data.orders || [];
+        const dataProducts = Array.isArray(productsRes.data) ? productsRes.data : productsRes.data.products || [];
+
+        setOrders(dataOrders);
+        setProducts(dataProducts);
+      } catch (err) {
+        console.error("Erreur lors du chargement des données de l'API", err);
+        // Fallback de sécurité très important pour éviter le crash du .map()
+        setOrders([]);
+        setProducts([]);
+      } finally {
+        setIsLoading(false); 
+      }
+    };
+
+    fetchAdminData();
   }, []);
+
 
   // 💡 Point technique 1 : Formatage des dates ISO 8601 en français
   const formatDate = (isoString) => {
@@ -44,7 +74,7 @@ export default function AdminDashboard() {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       // Met à jour la BDD de ton amie
-      await api.put(`/api/orders/${orderId}`, { status: newStatus });
+      await api.put(`/api/orders/${orderId}/status`, { status: newStatus });
       
       // Met à jour l'interface React visuellement
       setOrders(orders.map(order => 
@@ -145,11 +175,20 @@ export default function AdminDashboard() {
                         <span className="font-mono text-xs text-gray-400 block truncate w-24">#{order._id}</span>
                         <span className="text-xs font-light text-muted block mt-0.5">{formatDate(order.createdAt)}</span>
                       </td>
-                      <td className="py-4 px-6 font-medium">{order.clientName}</td>
-                      <td className="py-4 px-6">
-                        <span className="block text-xs font-light">{order.itemsCount} {order.itemsCount > 1 ? 'bouquets' : 'bouquet'}</span>
-                        <span className="block font-semibold text-sage-600 mt-0.5">{order.totalAmount.toLocaleString('fr-FR')} DA</span>
-                      </td>
+{/* Utilisation de order.client?.name au lieu de order.clientName */}
+<td className="py-4 px-6 font-medium">
+  {order.client?.name || "Client inconnu"}
+</td>
+
+{/* Utilisation de order.items?.length au lieu de order.itemsCount */}
+<td className="py-4 px-6">
+  <span className="block text-xs font-light">
+    {order.items?.length || 0} {(order.items?.length || 0) > 1 ? 'bouquets' : 'bouquet'}
+  </span>
+  <span className="block font-semibold text-sage-600 mt-0.5">
+    {order.totalAmount ? order.totalAmount.toLocaleString('fr-FR') : 0} DA
+  </span>
+</td>
                       <td className="py-4 px-6">{getStatusBadge(order.status)}</td>
                       <td className="py-4 px-6 text-right">
                         <div className="inline-flex gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">

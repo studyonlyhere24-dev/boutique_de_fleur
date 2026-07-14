@@ -73,7 +73,7 @@ export const updateOrderStatus = async (req, res) => {
     
     if (!validStatuses.includes(status)) throw new BadRequestError("Statut invalide") 
 
-    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true }) 
+    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { returnDocument: 'after', runValidators: true }) 
     
     if (!order) throw new NotFoundError("Commande introuvable") 
 

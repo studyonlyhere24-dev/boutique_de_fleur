@@ -21,7 +21,7 @@ export default function Catalog({ onOpenCart }) {
     const fetchFlowers = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get('/api/products');
+        const response = await api.get('/api/products/all');
         
         // 💡 SÉCURITÉ : On vérifie si la BDD renvoie bien un tableau direct
         if (Array.isArray(response.data)) {

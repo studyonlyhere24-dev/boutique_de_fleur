@@ -1,12 +1,12 @@
-import { useState } from 'react'; // 💡 Ajout de useState pour gérer un état de chargement local
+import { useState } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, addItem, deleteItem, clearCart } from '../../store/cartSlice';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import api from '../../api/axios'; // 💡 Importation de l'instance Axios connectée au backend
+import api from '../../api/axios'; 
 
 export default function SidebarCart({ isOpen, onClose }) {
   const dispatch = useDispatch();
-  const [isSubmitting, setIsSubmitting] = useState(false); // Bloque le bouton pendant l'envoi
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   
   // ─── LECTURE DU PANIER REDUX ───
   const items = useSelector((state) => state.cart?.items) || [];
@@ -19,27 +19,22 @@ export default function SidebarCart({ isOpen, onClose }) {
   const handleCheckout = async () => {
     if (items.length === 0) return;
 
-    // Structure exacte attendue par le modèle "Order" de ton amie
     const orderPayload = {
       items: items.map(item => ({
-        product: item._id,            // Référence à l'_id MongoDB
-        quantity: item.quantity,       // Quantité commandée
-        priceAtPurchase: item.price    // Prix figé
+        product: item._id,            
+        quantity: item.quantity,       
+        priceAtPurchase: item.price    
       })),
-      totalAmount: totalPrice          // Prix total
+      totalAmount: totalPrice          
     };
 
     try {
       setIsSubmitting(true);
-      
-      // Envoi de la commande par requête HTTP POST au backend Node.js
       await api.post('/api/orders/create', orderPayload);
-      
-      // Si le serveur répond 200/201 (Succès) :
       alert("✨ Commande validée avec succès ! Vos artisans fleuristes préparent votre bouquet.");
       
-      dispatch(clearCart()); // On vide le panier côté Front (Redux)
-      onClose();             // Ferme le tiroir du panier
+      dispatch(clearCart()); 
+      onClose();             
     } catch (error) {
       console.error("Erreur de validation de la commande", error);
       alert(
@@ -55,7 +50,6 @@ export default function SidebarCart({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Fond sombre transparent */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
       <div className="absolute inset-y-0 right-0 pl-10 max-w-full flex sm:pl-16">
@@ -98,9 +92,17 @@ export default function SidebarCart({ isOpen, onClose }) {
                         <Minus className="h-3 w-3" />
                       </button>
                       <span className="text-xs font-medium w-6 text-center text-dark">{item.quantity}</span>
+                      
+                      {/* 👇 MODIFICATION ICI : Le bouton + devient intelligent 👇 */}
                       <button 
                         onClick={() => dispatch(addItem(item))}
-                        className="p-1 border border-gray-200 rounded-lg hover:bg-gray-50 text-muted transition-colors"
+                        disabled={item.quantity >= item.stock}
+                        className={`p-1 border rounded-lg transition-colors ${
+                          item.quantity >= item.stock 
+                            ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed' // Grisé si max atteint
+                            : 'border-gray-200 hover:bg-gray-50 text-muted'                 // Normal sinon
+                        }`}
+                        title={item.quantity >= item.stock ? "Stock maximum atteint" : "Ajouter 1"}
                       >
                         <Plus className="h-3 w-3" />
                       </button>
@@ -134,7 +136,7 @@ export default function SidebarCart({ isOpen, onClose }) {
               
               <button 
                 onClick={handleCheckout}
-                disabled={isSubmitting} // 💡 Évite les doubles clics accidentels pendant l'appel réseau
+                disabled={isSubmitting}
                 className="w-full h-12 bg-sage-600 text-white font-medium rounded-xl shadow-lg shadow-sage-600/10 hover:bg-sage-700 transition-colors active:scale-98 text-sm mt-2 flex items-center justify-center disabled:opacity-50"
               >
                 {isSubmitting ? "Envoi de la commande..." : "Valider ma commande"}

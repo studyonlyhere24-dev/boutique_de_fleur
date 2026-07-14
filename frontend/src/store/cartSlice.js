@@ -8,7 +8,7 @@ export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // ─── AJOUTER UN ARTICLE AU PANIER ───
+/*     // ─── AJOUTER UN ARTICLE AU PANIER ───
     addItem: (state, action) => {
       const newItem = action.payload;
       
@@ -24,6 +24,28 @@ export const cartSlice = createSlice({
           ...newItem,
           quantity: newItem.quantity || 1
         });
+      }
+    }, */
+
+// ─── AJOUTER UN ARTICLE AU PANIER ───
+    addItem: (state, action) => {
+      const newItem = action.payload;
+      
+      const existingItem = state.items.find(item => item._id === newItem._id);
+
+      if (existingItem) {
+        // On vérifie que la quantité dans le panier est strictement inférieure au stock disponible
+        if (existingItem.quantity < existingItem.stock) {
+          existingItem.quantity += 1;
+        }
+      } else {
+        // Si c'est un nouvel article et qu'il y a du stock
+        if (newItem.stock > 0) {
+          state.items.push({
+            ...newItem,
+            quantity: 1
+          });
+        }
       }
     },
 
