@@ -2,6 +2,7 @@
 
 import jwt from "jsonwebtoken"
 import Admin from "../models/adminModel.js"
+import Client from "../models/clientModel.js"
 import { UnauthenticatedError, UnauthorizedError } from "../errors/customErrors.js"
 
 export const verifyToken = (req, res, next) => {
@@ -22,6 +23,16 @@ export const isAdmin = async (req, res, next) => {
     
     if (!admin) {
         throw new UnauthorizedError("Accès refusé - Droits administrateur requis") 
+    }
+
+    next()
+}
+
+export const isClient = async (req, res, next) => {
+    const client = await Client.findById(req.userId)
+    
+    if (!client) {
+        throw new UnauthorizedError("Accès refusé - Droits client requis") 
     }
 
     next()
