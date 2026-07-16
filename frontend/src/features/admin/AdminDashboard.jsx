@@ -74,7 +74,7 @@ useEffect(() => {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       // Met à jour la BDD de ton amie
-      await api.put(`/api/orders/${orderId}/status`, { status: newStatus });
+      await api.patch(`/api/orders/${orderId}/status`, { status: newStatus });
       
       // Met à jour l'interface React visuellement
       setOrders(orders.map(order => 
@@ -90,7 +90,7 @@ useEffect(() => {
     const value = Math.max(0, parseInt(newStock) || 0);
     try {
       // Met à jour la BDD de ton amie
-      await api.put(`/api/products/${productId}`, { stock: value });
+      await api.patch(`/api/products/${productId}`, { stock: value });
       
       // Met à jour l'interface React visuellement
       setProducts(products.map(prod => 

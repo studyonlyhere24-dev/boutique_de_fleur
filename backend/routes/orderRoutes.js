@@ -12,6 +12,6 @@ router.get('/mine', verifyToken, isClient, getMyOrders)
 
 router.get('/all', verifyToken, isAdmin, getAllOrders) 
 
-router.put('/:id/status', verifyToken, isAdmin, updateOrderStatus) 
+router.patch('/:id/status', verifyToken, isAdmin, updateOrderStatus) 
 
 export default router

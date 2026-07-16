@@ -33,9 +33,9 @@ const handleSubmit = async (e) => {
       }
 
       // On cible la bonne route selon l'onglet actif
-      const targetRoute = isAdmin ? '/api/auth/login' : '/api/auth/login';
+      const targetRoute ='/api/auth/login';
       
-     await api.post(targetRoute, { email, password });
+      await api.post(targetRoute, { email, password });
       
       // Si le serveur répond avec succès, le cookie est déjà enregistré par le navigateur !
       setIsLoading(false);
