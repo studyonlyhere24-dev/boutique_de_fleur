@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ShoppingBag, User, Menu, X, LogOut, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, User, Menu, X, LogOut, ShieldCheck, ClipboardList } from 'lucide-react';
 
 export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isAdmin = userRole === 'admin';
 
   // ─── LECTURE DU STORE REDUX (Adapté aux noms de l'API) ───
   const items = useSelector((state) => state.cart?.items) || [];
@@ -16,9 +17,9 @@ export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             
-            {/* LOGO */}
+            {/* LOGO (Redirige vers le Dashboard si Admin, sinon le Catalogue) */}
             <button 
-              onClick={() => onNavigate('catalog')} 
+              onClick={() => onNavigate(isAdmin ? 'admin-dashboard' : 'catalog')} 
               className="flex items-center gap-2 flex-shrink-0 bg-transparent border-0 cursor-pointer"
             >
               <span className="text-xl font-serif font-semibold tracking-wide text-dark">
@@ -28,16 +29,30 @@ export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
 
             {/* LIENS PC */}
             <div className="hidden md:flex items-center gap-8">
-              <button 
-                onClick={() => onNavigate('catalog')} 
-                className="text-sm font-medium text-dark hover:text-sage-600 transition-colors bg-transparent border-0 cursor-pointer"
-              >
-                Catalogue
-              </button>
-              {userRole === 'admin' && (
+              {/* 💡 S'affiche uniquement pour les clients (Masqué pour l'admin) */}
+              {!isAdmin && (
+                <button 
+                  onClick={() => onNavigate('catalog')} 
+                  className="text-sm font-medium text-dark hover:text-sage-600 transition-colors bg-transparent border-0 cursor-pointer"
+                >
+                  Catalogue
+                </button>
+              )}
+
+              {/* 💡 NOUVEAU : Rubrique "Mes commandes" accessible uniquement au client connecté */}
+              {userRole && !isAdmin && (
+                <button 
+                  onClick={() => onNavigate('my-orders')} 
+                  className="text-sm font-medium text-dark hover:text-sage-600 transition-colors bg-transparent border-0 cursor-pointer flex items-center gap-1"
+                >
+                  <ClipboardList className="h-4 w-4 text-gray-400" /> Mes commandes
+                </button>
+              )}
+              
+              {isAdmin && (
                 <button 
                   onClick={() => onNavigate('admin-dashboard')} 
-                  className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors bg-transparent border-0 cursor-pointer flex items-center gap-1"
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors bg-transparent border-0 cursor-pointer flex items-center gap-1.5 bg-purple-50 px-3 py-1.5 rounded-full"
                 >
                   <ShieldCheck className="h-4 w-4" /> Dashboard Admin
                 </button>
@@ -46,18 +61,22 @@ export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
 
             {/* ACTIONS */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <button 
-                onClick={onOpenCart}
-                className="relative p-2 text-dark hover:bg-gray-50 rounded-full transition-colors"
-                aria-label="Ouvrir le panier"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                {totalArticles > 0 && (
-                  <span className="absolute top-1 right-1 bg-sage-600 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
-                    {totalArticles}
-                  </span>
-                )}
-              </button>
+              
+              {/* 💡 MASQUÉ POUR L'ADMIN : Bouton Panier */}
+              {!isAdmin && (
+                <button 
+                  onClick={onOpenCart}
+                  className="relative p-2 text-dark hover:bg-gray-50 rounded-full transition-colors"
+                  aria-label="Ouvrir le panier"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  {totalArticles > 0 && (
+                    <span className="absolute top-1 right-1 bg-sage-600 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                      {totalArticles}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {/* BOUTON DYNAMIQUE CONNEXION / COMPTE / DECONNEXION */}
               {userRole ? (
@@ -78,6 +97,7 @@ export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
                 </button>
               )}
 
+              {/* Burger Menu Button (Mobile) */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 text-dark hover:bg-gray-50 rounded-full md:hidden transition-colors"
@@ -92,20 +112,36 @@ export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
         {/* MENU MOBILE */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-50 bg-white px-6 py-5 space-y-4 shadow-inner flex flex-col items-start">
-            <button 
-              onClick={() => { setIsMenuOpen(false); onNavigate('catalog'); }}
-              className="text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 block w-full text-left bg-transparent border-0"
-            >
-              Catalogue
-            </button>
-            {userRole === 'admin' && (
+            
+            {/* 💡 Option Catalogue pour mobile */}
+            {!isAdmin && (
               <button 
-                onClick={() => { setIsMenuOpen(false); onNavigate('admin-dashboard'); }}
-                className="text-base font-medium text-purple-600 hover:text-purple-700 transition-colors py-1 block w-full text-left bg-transparent border-0"
+                onClick={() => { setIsMenuOpen(false); onNavigate('catalog'); }}
+                className="text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 block w-full text-left bg-transparent border-0"
               >
-                Dashboard Admin
+                Catalogue
               </button>
             )}
+
+            {/* 💡 NOUVEAU SUR MOBILE : Option Mes commandes */}
+            {userRole && !isAdmin && (
+              <button 
+                onClick={() => { setIsMenuOpen(false); onNavigate('my-orders'); }}
+                className="text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 block w-full text-left bg-transparent border-0 flex items-center gap-2"
+              >
+                <ClipboardList className="h-5 w-5 text-gray-400" /> Mes commandes
+              </button>
+            )}
+
+            {isAdmin && (
+              <button 
+                onClick={() => { setIsMenuOpen(false); onNavigate('admin-dashboard'); }}
+                className="text-base font-medium text-purple-600 hover:text-purple-700 transition-colors py-1 block w-full text-left bg-transparent border-0 flex items-center gap-2"
+              >
+                <ShieldCheck className="h-5 w-5" /> Dashboard Admin
+              </button>
+            )}
+
             {userRole ? (
               <button 
                 onClick={() => { setIsMenuOpen(false); onLogout(); }}

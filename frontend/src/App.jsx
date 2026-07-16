@@ -8,6 +8,7 @@ import SidebarCart from './features/cart/SidebarCart';
 import StickyCartBanner from './features/cart/StickyCartBanner';
 import Login from './features/auth/Login';
 import AdminDashboard from './features/admin/AdminDashboard';
+import ClientOrders from './orders/ClientOrders'; 
 
 export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -15,25 +16,42 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('catalog'); 
   const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
 
+  // 🔄 ÉTAT DE RAFRAÎCHISSEMENT DE LA LISTE DES COMMANDES
+  const [refreshOrdersTrigger, setRefreshOrdersTrigger] = useState(0);
+
+  const triggerOrdersRefresh = () => {
+    setRefreshOrdersTrigger(prev => prev + 1);
+  };
+
+  // ─── GESTION DU CATALOGUE (SÉLECTION D'UN BOUQUET) ───
+  const handleCatalogAddProduct = () => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      // Sur mobile, quand on ajoute un bouquet, on n'ouvre pas le grand tiroir.
+      // On laisse juste la bannière verte (StickyCartBanner) s'actualiser en bas.
+      setIsCartOpen(false);
+    } else {
+      // Sur PC, on ouvre directement la Sidebar à droite
+      setIsCartOpen(true);
+    }
+  };
+
   // ─── VÉRIFICATION DE LA SESSION AU CHARGEMENT (F5) ───
   useEffect(() => {
     const verifierSession = async () => {
       try {
         const response = await api.get('/api/auth/checkauth');
-        
-        // On récupère le rôle renvoyé par ton back-end (ajuste "response.data.role" selon la structure exacte de ton API)
         const role = response.data.role || 'client';
         setUserRole(role);
         
-        // Optionnel : Si c'est un admin, on le remet direct sur son dashboard après un F5
         if (role === 'admin') {
           setCurrentPage('admin-dashboard');
         }
       } catch (error) {
-        // Le token est absent, expiré ou invalide
+        console.warn("Session non active ou expirée :", error.message);
         setUserRole(null); 
       } finally {
-        setIsCheckingAuth(false); // La vérification est terminée, on peut afficher l'app
+        setIsCheckingAuth(false); 
       }
     };
 
@@ -49,21 +67,18 @@ export default function App() {
     }
   };
 
-  // ─── DÉCONNEXION (AVEC DESTRUCTION DU COOKIE) ───
+  // ─── DÉCONNEXION ───
   const handleLogout = async () => {
     try {
-      // 👈 On dit au back-end de détruire le cookie httpOnly (route définie dans authRoutes.js)
       await api.post('/api/auth/logout');
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
     } finally {
-      // Même en cas d'erreur réseau, on déconnecte visuellement l'utilisateur
       setUserRole(null);
       setCurrentPage('catalog');
     }
   };
 
-  // ─── ÉCRAN DE CHARGEMENT PENDANT LA VÉRIFICATION ───
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-stone-50/50">
@@ -73,12 +88,14 @@ export default function App() {
     );
   }
 
+  const isAdmin = userRole === 'admin';
+
   return (
     <BrowserRouter> 
-      <div className="min-h-screen bg-white text-dark antialiased">
+      <div className="min-h-screen bg-white text-dark antialiased relative">
         
         <Navbar 
-          onOpenCart={() => setIsCartOpen(true)} 
+          onOpenCart={() => setIsCartOpen(true)} // 💡 Toujours ouvrir le panier quand on clique sur la Navbar
           userRole={userRole}
           onLogout={handleLogout}
           onNavigate={(page) => setCurrentPage(page)}
@@ -86,20 +103,34 @@ export default function App() {
 
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           {currentPage === 'catalog' && (
-            <Catalog onOpenCart={() => setIsCartOpen(true)} />
+            <Catalog onOpenCart={handleCatalogAddProduct} /> // 💡 N'ouvre le tiroir que sur PC lors d'un ajout
           )}
           
           {currentPage === 'login' && (
             <Login onLoginSuccess={handleLoginSuccess} />
           )}
 
-          {currentPage === 'admin-dashboard' && userRole === 'admin' && (
+          {currentPage === 'admin-dashboard' && isAdmin && (
             <AdminDashboard />
+          )}
+
+          {/* Suivi des commandes */}
+          {currentPage === 'my-orders' && userRole && !isAdmin && (
+            <ClientOrders refreshTrigger={refreshOrdersTrigger} />
           )}
         </main>
 
-        <SidebarCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-        <StickyCartBanner onOpenCart={() => setIsCartOpen(true)} />
+        {/* Panier & Bannière collante */}
+        {!isAdmin && (
+          <>
+            <SidebarCart 
+              isOpen={isCartOpen} 
+              onClose={() => setIsCartOpen(false)} 
+              onOrderSuccess={triggerOrdersRefresh} 
+            />
+            <StickyCartBanner onOpenCart={() => setIsCartOpen(true)} />
+          </>
+        )}
         
       </div>
     </BrowserRouter>

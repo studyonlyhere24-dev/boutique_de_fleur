@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'; // 💡 Ajout de useEffect ici
-import { Package, ShoppingCart, AlertTriangle, CheckCircle2, Truck, XCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react'; 
+import { Package, ShoppingCart, AlertTriangle, CheckCircle2, Truck, XCircle, Clock, Phone, Mail, MapPin, FileText } from 'lucide-react';
 import api from '../../api/axios';
 
 export default function AdminDashboard() {
@@ -9,37 +9,15 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   // ─── API : CHARGEMENT INITIAL DES DONNÉES DU BACKEND ───
-/*   useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        setIsLoading(true); // 💡 On active l'écran de chargement
-        const [ordersRes, productsRes] = await Promise.all([
-          api.get('/api/orders/all'),
-          api.get('/api/products/all')
-        ]);
-        setOrders(ordersRes.data);
-        setProducts(productsRes.data);
-      } catch (err) {
-        console.error("Erreur lors du chargement des données de l'API", err);
-      } finally {
-        setIsLoading(false); // 💡 On éteint le chargement, ESLint est content !
-      }
-    };
-
-    fetchAdminData();
-  }, []); */
-
-useEffect(() => {
+  useEffect(() => {
     const fetchAdminData = async () => {
       try {
         setIsLoading(true); 
         const [ordersRes, productsRes] = await Promise.all([
           api.get('/api/orders/all'),
-          api.get('/api/products/all') // Correction de la route pour correspondre à productRoutes.js
+          api.get('/api/products/all') 
         ]);
         
-        // On s'assure d'extraire les tableaux (vérifie le nom exact des propriétés renvoyées par ton back-end)
-        // Si ton API renvoie directement un tableau, garde .data. Sinon, pointe vers .data.orders / .data.products
         const dataOrders = Array.isArray(ordersRes.data) ? ordersRes.data : ordersRes.data.orders || [];
         const dataProducts = Array.isArray(productsRes.data) ? productsRes.data : productsRes.data.products || [];
 
@@ -47,7 +25,6 @@ useEffect(() => {
         setProducts(dataProducts);
       } catch (err) {
         console.error("Erreur lors du chargement des données de l'API", err);
-        // Fallback de sécurité très important pour éviter le crash du .map()
         setOrders([]);
         setProducts([]);
       } finally {
@@ -58,8 +35,7 @@ useEffect(() => {
     fetchAdminData();
   }, []);
 
-
-  // 💡 Point technique 1 : Formatage des dates ISO 8601 en français
+  // Formatage des dates ISO 8601 en français
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     return date.toLocaleDateString('fr-FR', {
@@ -70,13 +46,10 @@ useEffect(() => {
     });
   };
 
-  // Modification du statut d'une commande (Enregistrement en BDD via API)
+  // Modification du statut d'une commande
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      // Met à jour la BDD de ton amie
       await api.patch(`/api/orders/${orderId}/status`, { status: newStatus });
-      
-      // Met à jour l'interface React visuellement
       setOrders(orders.map(order => 
         order._id === orderId ? { ...order, status: newStatus } : order
       ));
@@ -89,10 +62,7 @@ useEffect(() => {
   const handleStockChange = async (productId, newStock) => {
     const value = Math.max(0, parseInt(newStock) || 0);
     try {
-      // Met à jour la BDD de ton amie
       await api.patch(`/api/products/${productId}`, { stock: value });
-      
-      // Met à jour l'interface React visuellement
       setProducts(products.map(prod => 
         prod._id === productId ? { ...prod, stock: value } : prod
       ));
@@ -101,7 +71,6 @@ useEffect(() => {
     }
   };
 
-  // 💡 Gestion de l'écran de chargement pendant que l'API répond
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
@@ -110,7 +79,7 @@ useEffect(() => {
     );
   }
 
-  // Utilitaires de style pour les status (Enum)
+  // Utilitaires de style pour les status
   const getStatusBadge = (status) => {
     const styles = {
       pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -158,47 +127,114 @@ useEffect(() => {
             </div>
             
             <div className="divide-y divide-gray-100 overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-stone-50/50 text-[11px] font-semibold text-muted uppercase tracking-wider border-b border-gray-100">
-                    <th className="py-3 px-6">ID Commande / Date</th>
-                    <th className="py-3 px-6">Client</th>
+                    <th className="py-3 px-6">ID / Date</th>
+                    <th className="py-3 px-6">Destinataire & Contact</th>
+                    <th className="py-3 px-6">Adresse de livraison</th>
                     <th className="py-3 px-6">Articles / Total</th>
-                    <th className="py-3 px-6">Statut actuel</th>
-                    <th className="py-3 px-6 text-right">Actions de traitement</th>
+                    <th className="py-3 px-6">Statut</th>
+                    <th className="py-3 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-sm text-dark">
-                  {orders.map((order) => (
-                    <tr key={order._id} className="hover:bg-stone-50/30 transition-colors">
-                      <td className="py-4 px-6">
-                        <span className="font-mono text-xs text-gray-400 block truncate w-24">#{order._id}</span>
-                        <span className="text-xs font-light text-muted block mt-0.5">{formatDate(order.createdAt)}</span>
-                      </td>
-{/* Utilisation de order.client?.name au lieu de order.clientName */}
-<td className="py-4 px-6 font-medium">
-  {order.client?.name || "Client inconnu"}
-</td>
+                  {orders.map((order) => {
+                    const details = order.deliveryDetails || {};
+                    return (
+                      <tr key={order._id} className="hover:bg-stone-50/30 transition-colors align-top">
+                        
+                        {/* 1. ID COMMANDE / DATE */}
+                        <td className="py-4 px-6">
+                          <span className="font-mono text-xs text-gray-400 block truncate w-24">#{order._id}</span>
+                          <span className="text-xs font-light text-muted block mt-1">{formatDate(order.createdAt)}</span>
+                        </td>
 
-{/* Utilisation de order.items?.length au lieu de order.itemsCount */}
-<td className="py-4 px-6">
-  <span className="block text-xs font-light">
-    {order.items?.length || 0} {(order.items?.length || 0) > 1 ? 'bouquets' : 'bouquet'}
-  </span>
-  <span className="block font-semibold text-sage-600 mt-0.5">
-    {order.totalAmount ? order.totalAmount.toLocaleString('fr-FR') : 0} DA
-  </span>
-</td>
-                      <td className="py-4 px-6">{getStatusBadge(order.status)}</td>
-                      <td className="py-4 px-6 text-right">
-                        <div className="inline-flex gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
-                          <button onClick={() => handleStatusChange(order._id, 'confirmed')} title="Confirmer / Préparer" className={`p-1.5 rounded-md transition-colors ${order.status === 'confirmed' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}><Clock className="h-3.5 w-3.5" /></button>
-                          <button onClick={() => handleStatusChange(order._id, 'shipped')} title="Expédier au livreur" className={`p-1.5 rounded-md transition-colors ${order.status === 'shipped' ? 'bg-emerald-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}><Truck className="h-3.5 w-3.5" /></button>
-                          <button onClick={() => handleStatusChange(order._id, 'cancelled')} title="Annuler la commande" className={`p-1.5 rounded-md transition-colors ${order.status === 'cancelled' ? 'bg-rose-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}><XCircle className="h-3.5 w-3.5" /></button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        {/* 2. CLIENT / DESTINATAIRE (Avec Email & Téléphone) */}
+                        <td className="py-4 px-6 space-y-1.5">
+                          <div className="font-medium text-dark">
+                            {details.customerName || order.client?.name || "Client Inconnu"}
+                          </div>
+                          {details.phone && (
+                            <div className="flex items-center gap-1.5 text-xs text-muted">
+                              <Phone className="h-3 w-3 text-sage-600 flex-shrink-0" />
+                              <span>{details.phone}</span>
+                            </div>
+                          )}
+                          {details.email && (
+                            <div className="flex items-center gap-1.5 text-xs text-muted truncate max-w-[180px]" title={details.email}>
+                              <Mail className="h-3 w-3 text-sage-600 flex-shrink-0" />
+                              <span>{details.email}</span>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* 3. ADRESSE DE LIVRAISON & NOTES */}
+                        <td className="py-4 px-6 space-y-2 max-w-[250px]">
+                          {details.address ? (
+                            <div className="flex items-start gap-1.5 text-xs text-dark/90 leading-relaxed">
+                              <MapPin className="h-3.5 w-3.5 text-rose-500 mt-0.5 flex-shrink-0" />
+                              <span>{details.address}</span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400 italic">Aucune adresse fournie</span>
+                          )}
+
+                          {/* Affichage de la note s'il y en a une */}
+                          {details.notes && (
+                            <div className="p-2 bg-amber-50/70 border border-amber-100 rounded-lg flex gap-1.5 items-start">
+                              <FileText className="h-3.5 w-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
+                              <div className="text-[11px] text-amber-800 font-light leading-snug">
+                                <span className="font-semibold block">Note client :</span>
+                                {details.notes}
+                              </div>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* 4. DETAILS DU PANIER */}
+                        <td className="py-4 px-6">
+                          <span className="block text-xs font-light">
+                            {order.items?.length || 0} {(order.items?.length || 0) > 1 ? 'bouquets' : 'bouquet'}
+                          </span>
+                          <span className="block font-semibold text-sage-600 mt-1">
+                            {order.totalAmount ? order.totalAmount.toLocaleString('fr-FR') : 0} DA
+                          </span>
+                        </td>
+
+                        {/* 5. BADGE DE STATUT */}
+                        <td className="py-4 px-6">{getStatusBadge(order.status)}</td>
+
+                        {/* 6. ACTIONS ADMINISTRATEUR */}
+                        <td className="py-4 px-6 text-right">
+                          <div className="inline-flex gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                            <button 
+                              onClick={() => handleStatusChange(order._id, 'confirmed')} 
+                              title="Confirmer / Préparer" 
+                              className={`p-1.5 rounded-md transition-colors ${order.status === 'confirmed' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+                            >
+                              <Clock className="h-3.5 w-3.5" />
+                            </button>
+                            <button 
+                              onClick={() => handleStatusChange(order._id, 'shipped')} 
+                              title="Expédier au livreur" 
+                              className={`p-1.5 rounded-md transition-colors ${order.status === 'shipped' ? 'bg-emerald-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+                            >
+                              <Truck className="h-3.5 w-3.5" />
+                            </button>
+                            <button 
+                              onClick={() => handleStatusChange(order._id, 'cancelled')} 
+                              title="Annuler la commande" 
+                              className={`p-1.5 rounded-md transition-colors ${order.status === 'cancelled' ? 'bg-rose-500 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </td>
+
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -224,7 +260,6 @@ useEffect(() => {
                         <span className="text-xs font-semibold text-sage-600">{product.price.toLocaleString('fr-FR')} DA</span>
                       </div>
                       
-                      {/* Alerte visuelle pour l'admin */}
                       {isRupture ? (
                         <span className="inline-flex items-center gap-1 text-[10px] text-rose-600 font-medium bg-rose-50 px-1.5 py-0.5 rounded">
                           <AlertTriangle className="h-3 w-3" /> Rupture de stock (Bloqué au Front)
@@ -236,7 +271,6 @@ useEffect(() => {
                       )}
                     </div>
 
-                    {/* Ajustement de la quantité numérique par l'admin */}
                     <div className="flex flex-col items-end gap-1">
                       <label className="text-[10px] font-semibold text-muted uppercase tracking-wider">Quantité en BDD</label>
                       <input 

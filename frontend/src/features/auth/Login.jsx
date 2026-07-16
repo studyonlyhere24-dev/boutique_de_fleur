@@ -119,7 +119,7 @@ const handleSubmit = async (e) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-11 border border-gray-200 rounded-xl pl-11 pr-4 text-sm focus:border-sage-500 focus:outline-none bg-white shadow-sm transition-colors"
-                placeholder={isAdmin ? "admin@floraconnect.com" : "votre.email@exemple.com"}
+                placeholder={isAdmin ? "admin@admin.com" : "votre.email@client.com"}
               />
             </div>
           </div>

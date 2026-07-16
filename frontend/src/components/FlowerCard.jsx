@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch } from 'react-redux';
 import { addItem } from '../store/cartSlice';
 import { theme } from '../styles/theme';

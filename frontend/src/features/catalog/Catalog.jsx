@@ -108,62 +108,96 @@ export default function Catalog({ onOpenCart }) {
         </div>
       </section>
 
-      {/* ─── 2. L'ATELIER DE CREATION SUR-MESURE ─── */}
-      <section id="sur-mesure" className="max-w-5xl mx-auto space-y-12 scroll-mt-24">
-        <div className="text-center space-y-3">
-          <span className="text-xs font-bold tracking-widest text-sage-600 bg-sage-100 px-3 py-1 rounded-full uppercase">Atelier d'Artiste</span>
-          <h2 className="font-serif text-4xl font-medium text-dark">Façonnez votre poésie</h2>
-          <p className="text-sm font-light text-muted max-w-md mx-auto">Un mix parfait de nuances vertes et de textures poudrées.</p>
-        </div>
+     {/* ─── 2. L'ATELIER DE CREATION SUR-MESURE ─── */}
+  <section id="sur-mesure" className="max-w-5xl mx-auto space-y-12 scroll-mt-24">
+    <div className="text-center space-y-3">
+      <span className="text-xs font-bold tracking-widest text-sage-600 bg-sage-100 px-3 py-1 rounded-full uppercase">Atelier d'Artiste</span>
+      <h2 className="font-serif text-4xl font-medium text-dark">Façonnez votre poésie</h2>
+      <p className="text-sm font-light text-muted max-w-md mx-auto">Un mix parfait de nuances vertes et de textures poudrées.</p>
+    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
-          <div className="md:col-span-7 bg-sage-100/30 rounded-[2rem] border border-sage-100 p-6 sm:p-8 space-y-8 flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">01. Fond de Verdure Sauvage</span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button onClick={() => setBase(1200)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1200 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
-                    <span className="leading-tight">🌿 Feuillage Linéaire (+1 200 DA)</span>
-                  </button>
-                  <button onClick={() => setBase(1800)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1800 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
-                    <span className="leading-tight">🍃 Eucalyptus Premium (+1 800 DA)</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-powder-600">02. Cœur de Fleurs Rose Poésie</span>
-                <div className="flex flex-wrap gap-2.5 w-full">
-                  {[[2500, "Roses Blanches"], [3500, "Pivoines Poudrées"], [1800, "Fleurs Sauvages"]].map(([price, name]) => (
-                    <button key={price} onClick={() => setFlowerType(price)} className={`flex-1 min-w-[95px] sm:min-w-[110px] py-3 px-2 rounded-xl text-center text-xs transition-all border break-words ${flowerType === price ? 'border-powder-500 bg-white shadow-sm text-powder-600 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>{name}</button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">03. Envergure de la Composition</span>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setSize(1)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Format Délicat</button>
-                  <button onClick={() => setSize(1.5)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1.5 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Majestueux (x1.5)</button>
-                </div>
-              </div>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+      {/* Colonne Gauche : Options de configuration */}
+      <div className="md:col-span-7 bg-sage-100/30 rounded-[2rem] border border-sage-100 p-6 sm:p-8 space-y-8 flex flex-col justify-between">
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">01. Fond de Verdure Sauvage</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button onClick={() => setBase(1200)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1200 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
+                <span className="leading-tight">🌿 Feuillage Linéaire (+1 200 DA)</span>
+              </button>
+              <button onClick={() => setBase(1800)} className={`w-full min-h-[4.5rem] py-3 px-4 rounded-xl text-left text-sm transition-all border flex items-center ${base === 1800 ? 'border-sage-500 bg-white shadow-sm text-sage-700 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>
+                <span className="leading-tight">🍃 Eucalyptus Premium (+1 800 DA)</span>
+              </button>
             </div>
           </div>
 
-          <div className="md:col-span-5 bg-gradient-to-br from-sage-500 via-powder-500 to-powder-600 rounded-[2rem] p-8 flex flex-col justify-between text-center md:text-left shadow-xl shadow-powder-500/10 min-h-[280px]">
-            <div className="space-y-2">
-              <h3 className="font-serif text-3xl font-light text-white tracking-wide">Votre Signature</h3>
-              <p className="text-xs text-white/90 font-light">Une création sur-mesure confectionnée à la commande.</p>
+          <div className="space-y-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-powder-600">02. Cœur de Fleurs Rose Poésie</span>
+            <div className="flex flex-wrap gap-2.5 w-full">
+              {[[2500, "Roses Blanches"], [3500, "Pivoines Poudrées"], [1800, "Fleurs Sauvages"]].map(([price, name]) => (
+                <button key={price} onClick={() => setFlowerType(price)} className={`flex-1 min-w-[95px] sm:min-w-[110px] py-3 px-2 rounded-xl text-center text-xs transition-all border break-words ${flowerType === price ? 'border-powder-500 bg-white shadow-sm text-powder-600 font-semibold' : 'border-transparent bg-white/60 hover:bg-white text-dark'}`}>{name}</button>
+              ))}
             </div>
-            <div className="py-6 md:py-0">
-              <span className="text-xs uppercase tracking-widest text-white/80 font-mono">Total à l'Atelier</span>
-              <p className="text-4xl font-bold tracking-tight text-white mt-1">{customPrice.toLocaleString('fr-FR')} DA</p>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-xs font-semibold uppercase tracking-wider text-sage-600">03. Envergure de la Composition</span>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => setSize(1)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Format Délicat</button>
+              <button onClick={() => setSize(1.5)} className={`w-full min-h-[3.5rem] py-2 px-3 rounded-xl text-center text-sm transition-all border flex items-center justify-center ${size === 1.5 ? 'border-sage-500 bg-white shadow-sm font-semibold text-sage-700' : 'border-transparent bg-white/60 hover:bg-white'}`}>Majestueux (x1.5)</button>
             </div>
-            <button onClick={handleAddCustomBouquet} className="w-full h-12 rounded-xl bg-white text-sage-800 font-bold text-sm shadow-md transition-all hover:bg-powder-100 hover:text-powder-700 active:scale-98 mt-4 md:mt-0">Ajouter ma création au panier</button>
           </div>
         </div>
-      </section>
+      </div>
 
+      {/* Colonne Droite : Preview visuel dynamique & Prix */}
+      <div className="md:col-span-5 bg-gradient-to-br from-sage-900 to-sage-950 rounded-[2rem] overflow-hidden flex flex-col justify-between text-left shadow-xl min-h-[450px] border border-sage-800">
+        
+        {/* 🖼️ Zone de Preview de l'image dynamique */}
+        <div className="relative w-full h-[230px] overflow-hidden bg-black/20 group">
+          <img 
+            src={
+              // On va chercher l'image correspondant au type de fleur sélectionné
+              flowerType === 2500 
+                ? "https://images.unsplash.com/photo-1533616688419-b7a585564566?w=600&q=80" // Image pour Roses Blanches
+                : flowerType === 3500 
+                ? "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80" // Image pour Pivoines Poudrées
+                : "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=600&q=80" // Image pour Fleurs Sauvages
+            } 
+            alt="Aperçu de votre création" 
+            className="w-full h-full object-cover transition-transform duration-750 ease-out scale-100 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-sage-950 via-transparent to-transparent"></div>
+          <span className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full">
+            Aperçu en temps réel
+          </span>
+        </div>
+
+        {/* Détails et bouton de validation */}
+        <div className="p-8 space-y-6">
+          <div className="flex justify-between items-end">
+            <div className="space-y-1">
+              <h3 className="font-serif text-2xl font-light text-white tracking-wide">Votre Signature</h3>
+              <p className="text-xs text-sage-300 font-light">Un arrangement personnalisé par vos soins.</p>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] uppercase tracking-widest text-sage-400 font-mono">Total</span>
+              <p className="text-2xl font-bold tracking-tight text-white mt-1">{customPrice.toLocaleString('fr-FR')} DA</p>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleAddCustomBouquet} 
+            className="w-full h-12 rounded-xl bg-white text-sage-900 hover:bg-powder-100 font-bold text-sm shadow-md transition-all active:scale-98"
+          >
+            Ajouter ma création au panier
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
       {/* ─── 3. CATALOGUE SYNCHRONISÉ AVEC LE BACKEND ─── */}
       <section id="pret-a-vendre" className="space-y-12 scroll-mt-24">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between border-b border-gray-100 pb-6 gap-6">

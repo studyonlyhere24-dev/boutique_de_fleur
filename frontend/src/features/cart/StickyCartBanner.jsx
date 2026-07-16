@@ -3,21 +3,21 @@ import { useSelector } from 'react-redux';
 import { ShoppingBag, ChevronUp } from 'lucide-react';
 
 export default function StickyCartBanner({ onOpenCart }) {
-  // ─── LECTURE DU PANIER REDUX ───
+  // ─── ON LIT LE PANIER DEPUIS REDUX COMME AVANT ───
   const items = useSelector((state) => state.cart?.items) || [];
   
-  // Liaison API : Remplacement de item.quantite par item.quantity et item.prix par item.price
+  // Calcul du nombre total d'articles et du prix total
   const totalArticles = items.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  // Si le panier est vide, on n'affiche rien du tout
+  // Si le panier est vide, on n'affiche rien
   if (totalArticles === 0) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 p-4 md:hidden pointer-events-none">
       <button
         onClick={onOpenCart}
-        className="w-full h-14 bg-sage-600 text-white rounded-2xl flex items-center justify-between px-5 shadow-xl shadow-sage-900/20 active:scale-98 transition-all pointer-events-auto"
+        className="w-full h-14 bg-sage-600 text-white rounded-2xl flex items-center justify-between px-5 shadow-xl shadow-sage-900/20 active:scale-95 transition-all pointer-events-auto"
       >
         <div className="flex items-center gap-3">
           <div className="relative p-1 bg-white/10 rounded-lg">
