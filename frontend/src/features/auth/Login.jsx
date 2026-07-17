@@ -64,7 +64,7 @@ const handleSubmit = async (e) => {
           <p className="text-xs font-light text-muted">
             {isForgotPassword 
               ? "Récupération de votre compte" 
-              : "FloraConnect — Portail d'authentification"
+              : "MaisonFlorale — Portail d'authentification"
             }
           </p>
         </div>
@@ -197,7 +197,7 @@ const handleSubmit = async (e) => {
           ) : (
             <p className="text-[11px] font-light text-muted">
               {isAdmin 
-                ? "Accès réservé au personnel de gestion de la plateforme FloraConnect." 
+                ? "Accès réservé au personnel de gestion de la plateforme MaisonFlorale." 
                 : "Pas encore de compte ? Passez commande pour enregistrer vos coordonnées automatiquement."
               }
             </p>

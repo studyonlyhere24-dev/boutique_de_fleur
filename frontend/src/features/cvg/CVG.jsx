@@ -97,7 +97,7 @@ export default function CGV() {
             Conditions Générales de <span className="italic font-normal text-powder-500 bg-gradient-to-r from-powder-500 to-sage-500 bg-clip-text text-transparent">Vente</span>
           </h1>
           <p className="text-sm font-light text-muted max-w-lg mx-auto">
-            Veuillez lire attentivement nos conditions avant de valider votre commande sur FloraConnect.
+            Veuillez lire attentivement nos conditions avant de valider votre commande sur MaisonFlorale.
           </p>
         </div>
 
@@ -116,7 +116,7 @@ export default function CGV() {
             </h2>
             <div className="text-sm font-light leading-relaxed text-muted space-y-2">
               <p>
-                Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre la boutique <strong>FloraConnect</strong> (située à Edimco, Béjaïa) et toute personne effectuant un achat via notre plateforme de vente en ligne. En validant votre commande, vous acceptez l'intégralité de ces conditions.
+                Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre la boutique <strong>MaisonFlorale</strong> (située à Edimco, Béjaïa) et toute personne effectuant un achat via notre plateforme de vente en ligne. En validant votre commande, vous acceptez l'intégralité de ces conditions.
               </p>
             </div>
           </section>
@@ -138,7 +138,7 @@ export default function CGV() {
             </h2>
             <div className="text-sm font-light leading-relaxed text-muted space-y-2">
               <p>
-                Nos prix sont indiqués en Dinars Algériens (DA) et sont toutes taxes comprises (TTC). FloraConnect se réserve le droit de modifier ses prix à tout moment, mais les produits seront facturés sur la base des tarifs en vigueur au moment de la validation de la commande.
+                Nos prix sont indiqués en Dinars Algériens (DA) et sont toutes taxes comprises (TTC). MaisonFlorale se réserve le droit de modifier ses prix à tout moment, mais les produits seront facturés sur la base des tarifs en vigueur au moment de la validation de la commande.
               </p>
               <ul className="list-disc pl-5 space-y-1 mt-2">
                 <li>Le paiement s'effectue à la livraison ou au retrait en boutique (Edimco).</li>
@@ -173,7 +173,7 @@ export default function CGV() {
               06. Service Clientèle et Litiges
             </h2>
             <p className="text-sm font-light leading-relaxed text-muted">
-              Pour toute question, réclamation ou suivi de commande, notre service client est à votre disposition par e-mail (contact@floraconnect.dz) ou par téléphone. En cas de litige, nous privilégions toujours une solution amiable. À défaut, les tribunaux de Béjaïa seront seuls compétents.
+              Pour toute question, réclamation ou suivi de commande, notre service client est à votre disposition par e-mail (contact@MaisonFlorale.dz) ou par téléphone. En cas de litige, nous privilégions toujours une solution amiable. À défaut, les tribunaux de Béjaïa seront seuls compétents.
             </p>
           </section>
 

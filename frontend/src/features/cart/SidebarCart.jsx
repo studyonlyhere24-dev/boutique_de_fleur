@@ -281,7 +281,7 @@ const orderPayload = {
                   type="email" 
                   name="email"
                   required
-                  placeholder="Ex: contact@floraconnect.dz"
+                  placeholder="Ex: contact@MaisonFlorale.dz"
                   value={formData.email}
                   onChange={handleInputChange}
                   className="h-11 px-4 border border-gray-200 rounded-xl text-sm text-dark focus:outline-none focus:border-sage-500 bg-white"

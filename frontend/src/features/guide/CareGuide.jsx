@@ -71,7 +71,7 @@ export default function CareGuide() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="mt-4 text-sm font-light text-muted max-w-md mx-auto"
         >
-          Un bouquet de chez FloraConnect est vivant. Suivez ces gestes simples pour prolonger son éclat et murmurer son parfum pendant des semaines.
+          Un bouquet de chez MaisonFlorale est vivant. Suivez ces gestes simples pour prolonger son éclat et murmurer son parfum pendant des semaines.
         </motion.p>
       </header>
 

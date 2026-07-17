@@ -11,7 +11,7 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #292524; background-color: #FAFAF9; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
     <div style="background-color: #6B8767; padding: 40px 20px; text-align: center;">
-      <p style="color: #D4A3A2; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">FloraConnect</p>
+      <p style="color: #D4A3A2; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">MaisonFlorale</p>
       <h1 style="font-family: Georgia, 'Times New Roman', serif; font-weight: normal; color: white; margin: 0; font-size: 28px;">Succès de l'opération</h1>
     </div>
     <div style="padding: 40px 30px;">
@@ -28,13 +28,13 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
       <div style="margin-top: 40px; border-top: 1px solid #f3f4f6; padding-top: 25px;">
         <p style="font-size: 15px; color: #78716C; margin: 0 0 15px 0;">
           À très bientôt,<br>
-          <strong style="color: #292524; font-size: 16px;">L'équipe FloraConnect</strong>
+          <strong style="color: #292524; font-size: 16px;">L'équipe MaisonFlorale</strong>
         </p>
         <p style="font-size: 13px; color: #a8a29e; margin: 0; line-height: 1.8;">
           📍 Quartier Edimco, Béjaïa, Algérie<br>
           📞 +213 (0) 550 12 34 56<br>
-          ✉️ <a href="mailto:contact@floraconnect.dz" style="color: #6B8767; text-decoration: none;">contact@floraconnect.dz</a><br>
-          🌐 <a href="https://www.floraconnect.dz" style="color: #6B8767; text-decoration: none;">www.floraconnect.dz</a>
+          ✉️ <a href="mailto:contact@MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">contact@MaisonFlorale.dz</a><br>
+          🌐 <a href="https://www.MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">www.MaisonFlorale.dz</a>
         </p>
       </div>
 
@@ -58,7 +58,7 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #292524; background-color: #FAFAF9; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
     <div style="background-color: #6B8767; padding: 40px 20px; text-align: center;">
-      <p style="color: #D4A3A2; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">FloraConnect</p>
+      <p style="color: #D4A3A2; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">MaisonFlorale</p>
       <h1 style="font-family: Georgia, 'Times New Roman', serif; font-weight: normal; color: white; margin: 0; font-size: 28px;">Oubli de mot de passe ?</h1>
     </div>
     <div style="padding: 40px 30px;">
@@ -74,13 +74,13 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
       <div style="margin-top: 40px; border-top: 1px solid #f3f4f6; padding-top: 25px;">
         <p style="font-size: 15px; color: #78716C; margin: 0 0 15px 0;">
           L'élégance à l'état premium,<br>
-          <strong style="color: #292524; font-size: 16px;">L'équipe FloraConnect</strong>
+          <strong style="color: #292524; font-size: 16px;">L'équipe MaisonFlorale</strong>
         </p>
         <p style="font-size: 13px; color: #a8a29e; margin: 0; line-height: 1.8;">
           📍 Quartier Edimco, Béjaïa, Algérie<br>
           📞 +213 (0) 550 12 34 56<br>
-          ✉️ <a href="mailto:contact@floraconnect.dz" style="color: #6B8767; text-decoration: none;">contact@floraconnect.dz</a><br>
-          🌐 <a href="https://www.floraconnect.dz" style="color: #6B8767; text-decoration: none;">www.floraconnect.dz</a>
+          ✉️ <a href="mailto:contact@MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">contact@MaisonFlorale.dz</a><br>
+          🌐 <a href="https://www.MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">www.MaisonFlorale.dz</a>
         </p>
       </div>
 
@@ -131,7 +131,7 @@ export const ORDER_CONFIRMATION_TEMPLATE = (order, orderId) => {
   <div class="email-container" style="max-width: 600px; width: 100%; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
     
     <div class="mobile-padding" style="background-color: #FAFAF9; padding: 40px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-      <p style="color: #6B8767; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">FloraConnect</p>
+      <p style="color: #6B8767; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0;">MaisonFlorale</p>
       <h1 class="mobile-text" style="font-family: Georgia, 'Times New Roman', serif; font-weight: normal; color: #292524; margin: 0; font-size: 26px;">
         <span class="sticker">🌿</span> Votre poésie est en préparation <span class="sticker-delay">🌸</span>
       </h1>
@@ -169,13 +169,13 @@ export const ORDER_CONFIRMATION_TEMPLATE = (order, orderId) => {
         <div style="margin-top: 40px; border-top: 1px solid #f3f4f6; padding-top: 25px;">
           <p style="font-size: 15px; color: #78716C; margin: 0 0 15px 0;">
             Merci pour votre confiance. 💝<br>
-            <strong style="color: #292524; font-size: 16px;">L'équipe FloraConnect</strong>
+            <strong style="color: #292524; font-size: 16px;">L'équipe MaisonFlorale</strong>
           </p>
           <p style="font-size: 13px; color: #a8a29e; margin: 0; line-height: 1.8;">
             📍 Quartier Edimco, Béjaïa, Algérie<br>
             📞 +213 (0) 550 12 34 56<br>
-            ✉️ <a href="mailto:contact@floraconnect.dz" style="color: #6B8767; text-decoration: none;">contact@floraconnect.dz</a><br>
-            🌐 <a href="https://www.floraconnect.dz" style="color: #6B8767; text-decoration: none;">www.floraconnect.dz</a>
+            ✉️ <a href="mailto:contact@MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">contact@MaisonFlorale.dz</a><br>
+            🌐 <a href="https://www.MaisonFlorale.dz" style="color: #6B8767; text-decoration: none;">www.MaisonFlorale.dz</a>
           </p>
         </div>
 

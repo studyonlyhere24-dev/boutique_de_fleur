@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-5">
           <div>
             <h1 className="font-serif text-3xl font-medium text-dark">Console Super-Admin</h1>
-            <p className="text-xs font-light text-muted mt-1">Gestion de la plateforme FloraConnect</p>
+            <p className="text-xs font-light text-muted mt-1">Gestion de la plateforme MaisonFlorale</p>
           </div>
           
           {/* Onglets de navigation */}

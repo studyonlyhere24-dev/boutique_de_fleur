@@ -303,7 +303,7 @@ export default function Catalog({ onOpenCart }) {
             <div className="lg:col-span-7 space-y-4">
               <h2 className="font-serif text-3xl text-dark">Là où les fleurs murmurent...</h2>
               <p className="text-sm font-light leading-relaxed text-muted">
-                Chaque création de <strong>FloraConnect</strong> est assemblée avec amour et passion pour transformer vos instants en souvenirs inoubliables.
+                Chaque création de <strong>MaisonFlorale</strong> est assemblée avec amour et passion pour transformer vos instants en souvenirs inoubliables.
               </p>
             </div>
             <div className="lg:col-span-5 bg-white/60 border border-rose-100/80 rounded-2xl p-6 backdrop-blur-md">

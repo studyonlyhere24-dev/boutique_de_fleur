@@ -118,7 +118,7 @@ export default function LegalNotices() {
               <ul className="list-disc pl-5 space-y-1">
                 <li><strong>Nom de l'entreprise :</strong> Maison Florale</li>
                 <li><strong>Adresse de la boutique :</strong> Quartier Edimco, Béjaïa, Algérie</li>
-                <li><strong>Email de contact :</strong> contact@floraconnect.dz</li>
+                <li><strong>Email de contact :</strong> contact@MaisonFlorale.dz</li>
                 <li><strong>Téléphone :</strong> +213 (0) 550 12 34 56</li>
               </ul>
             </div>

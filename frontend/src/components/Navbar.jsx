@@ -8,9 +8,9 @@ export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, cur
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           
-          {/* ─── LOGO (RETOUR STRICT AU CATALOGUE) ─── */}
+          {/* ─── LOGO (DYNAMIQUE SELON LE RÔLE) ─── */}
           <div 
-            onClick={() => onNavigate('catalog')} 
+            onClick={() => onNavigate(isAdmin ? 'admin-dashboard' : 'catalog')} 
             className="flex items-center gap-2 cursor-pointer group"
           >
             <span className="font-serif text-xl font-medium tracking-wide text-dark transition-colors group-hover:text-sage-600">
@@ -21,22 +21,28 @@ export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, cur
           {/* ─── LIENS DE NAVIGATION ─── */}
           <div className="hidden md:flex items-center gap-8 text-sm font-light text-muted">
             
-            {/* BOUTON BOUTIQUE -> VA VERS 'catalog' */}
-            <button 
-              onClick={() => onNavigate('catalog')}
-              className={`transition-colors hover:text-dark ${currentPage === 'catalog' ? 'text-dark font-medium' : ''}`}
-            >
-              Boutique
-            </button>
-            
-            {/* BOUTON GUIDE -> VA VERS 'care-guide' */}
-            <button 
-              onClick={() => onNavigate('care-guide')}
-              className={`flex items-center gap-1.5 transition-colors hover:text-dark ${currentPage === 'care-guide' ? 'text-dark font-medium' : ''}`}
-            >
-              <BookOpen className="h-3.5 w-3.5" /> Guide d'Entretien
-            </button>
+            {/* On affiche ces liens UNIQUEMENT si l'utilisateur n'est PAS un admin */}
+            {!isAdmin && (
+              <>
+                {/* BOUTON BOUTIQUE */}
+                <button 
+                  onClick={() => onNavigate('catalog')}
+                  className={`transition-colors hover:text-dark ${currentPage === 'catalog' ? 'text-dark font-medium' : ''}`}
+                >
+                  Boutique
+                </button>
+                
+                {/* BOUTON GUIDE D'ENTRETIEN */}
+                <button 
+                  onClick={() => onNavigate('care-guide')}
+                  className={`flex items-center gap-1.5 transition-colors hover:text-dark ${currentPage === 'care-guide' ? 'text-dark font-medium' : ''}`}
+                >
+                  <BookOpen className="h-3.5 w-3.5" /> Guide d'Entretien
+                </button>
+              </>
+            )}
 
+            {/* Espace commandes pour le client connecté */}
             {userRole && !isAdmin && (
               <button 
                 onClick={() => onNavigate('my-orders')}
@@ -45,16 +51,11 @@ export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, cur
                 Mes Commandes
               </button>
             )}
-
-            {isAdmin && (
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">
-                Mode Admin
-              </span>
-            )}
           </div>
 
           {/* ─── ACTIONS (PANIER / COMPTE) ─── */}
           <div className="flex items-center gap-4">
+            {/* Panier masqué pour l'admin */}
             {!isAdmin && (
               <button 
                 onClick={onOpenCart}

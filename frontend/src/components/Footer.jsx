@@ -9,7 +9,7 @@ export default function Footer({ onNavigate }) {
           
           {/* Colonne 1 : Brand */}
           <div className="space-y-3">
-            <h3 className="font-serif text-lg font-medium text-dark">FloraConnect</h3>
+            <h3 className="font-serif text-lg font-medium text-dark">MaisonFlorale</h3>
             <p className="text-xs font-light leading-relaxed max-w-xs text-muted">
               Votre artisan fleuriste digital. Des compositions exclusives livrées avec le plus grand soin.
             </p>
@@ -25,7 +25,7 @@ export default function Footer({ onNavigate }) {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-3.5 w-3.5 text-sage-600" />
-                <span>contact@floraconnect.dz</span>
+                <span>contact@MaisonFlorale.dz</span>
               </li>
             </ul>
           </div>
