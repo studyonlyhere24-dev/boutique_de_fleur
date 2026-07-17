@@ -57,6 +57,7 @@ export default function Catalog({ onOpenCart }) {
       ...flowerImages,
       _id: `custom-${Date.now()}`,
       name: `Sur-mesure : ${flowerNames[flowerType]}`,
+      isCustom: true,
       price: customPrice,
       imageUrl: flowerImages[flowerType],
       quantity: 1

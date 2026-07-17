@@ -192,7 +192,7 @@ export default function ClientOrders({ refreshTrigger }) {
                                   <p className="text-xs text-muted font-light">Quantité : {item.quantity}</p>
                                 </div>
                                 <span className="font-semibold text-dark">
-                                  {((item.price || 0) * (item.quantity || 1)).toLocaleString('fr-FR')} DA
+                                  {((item.priceAtPurchase || 0) * (item.quantity || 1)).toLocaleString('fr-FR')} DA
                                 </span>
                               </div>
                             ))}

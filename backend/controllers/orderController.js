@@ -9,45 +9,77 @@ import { BadRequestError, NotFoundError } from '../errors/customErrors.js'
 
 // ============================= PARTIE CLIENT =============================
 export const createOrder = async (req, res) => {
-    const { items } = req.body 
+    const { items, deliveryDetails } = req.body 
 
     if (!items || items.length === 0) throw new BadRequestError("Le panier est vide") 
+    if (!deliveryDetails) throw new BadRequestError("Les informations de livraison sont requises") 
 
     let totalAmount = 0 
     const productsToUpdate = [] 
     const finalItems = [] 
 
     for (const item of items) {
-        const product = await Product.findById(item.product) 
         
-        if (!product) throw new NotFoundError("Produit introuvable") 
-        if (product.stock < item.quantity) {
-            throw new BadRequestError(`Stock insuffisant pour la fleur : ${product.name}. Il n'en reste que ${product.stock}.`) 
+        // CAS 1 : création sur-mesure de l'Atelier
+        if (item.isCustom) {
+            totalAmount += item.price * item.quantity 
+            finalItems.push({
+                isCustom: true,
+                name: item.name,
+                quantity: item.quantity,
+                priceAtPurchase: item.price,
+                customDetails: item.customDetails
+            }) 
+            continue  
         }
 
-        totalAmount += product.price * item.quantity 
-        finalItems.push({ product: product._id, quantity: item.quantity, priceAtPurchase: product.price }) 
-        productsToUpdate.push({ productDoc: product, quantityToDeduct: item.quantity }) 
+        // CAS 2 : produit standard du catalogue
+        const productId = item.product || item._id  
+        const product = await Product.findById(productId) 
+        
+        if (!product) throw new NotFoundError("Produit introuvable")  
+        if (product.stock < item.quantity) {
+            throw new BadRequestError(`Stock insuffisant pour la fleur : ${product.name}. Il n'en reste que ${product.stock}.`)  
+        }
+
+        totalAmount += product.price * item.quantity  
+        
+        finalItems.push({ 
+            product: product._id, 
+            name: product.name,
+            quantity: item.quantity, 
+            priceAtPurchase: product.price 
+        })  
+        
+        productsToUpdate.push({ productDoc: product, quantityToDeduct: item.quantity })  
     }
 
-    const order = new Order({ client: req.userId, items: finalItems, totalAmount, status: 'pending' }) 
-    const savedOrder = await order.save() 
+    const order = new Order({ 
+        client: req.userId, 
+        items: finalItems, 
+        totalAmount, 
+        status: 'pending',
+        deliveryDetails
+    })  
+    const savedOrder = await order.save()  
 
     for (const p of productsToUpdate) {
         p.productDoc.stock -= p.quantityToDeduct 
-        await p.productDoc.save() 
+        await p.productDoc.save()  
     }
 
-    const client = await Client.findById(req.userId) 
-    if (client) {
-        const populatedOrder = await Order.findById(savedOrder._id).populate('items.product', 'name') 
-        sendOrderConfirmationEmail(client.email, populatedOrder).catch(err => {
-            console.error("Erreur lors de l'envoi de l'email de confirmation:", err) 
-        }) 
-    }
-
-    res.status(StatusCodes.CREATED).json({ success: true, message: "Commande validée avec succès", order: savedOrder }) 
-} 
+    const populatedOrder = await Order.findById(savedOrder._id).populate('items.product', 'name')  
+    
+    sendOrderConfirmationEmail(deliveryDetails.email, populatedOrder).catch(err => {
+        console.error("Erreur lors de l'envoi de l'email de confirmation:", err) 
+    })  
+    
+    res.status(StatusCodes.CREATED).json({ 
+        success: true, 
+        message: "Commande validée avec succès", 
+        order: savedOrder 
+    })  
+}
 
 export const getMyOrders = async (req, res) => {
     const orders = await Order.find({ client: req.userId })

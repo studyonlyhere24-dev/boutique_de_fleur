@@ -64,28 +64,4 @@ export const deleteProduct = async (req, res) => {
         throw new NotFoundError("Produit introuvable")
     }
     res.status(StatusCodes.OK).json({ success: true, message: "Produit définitivement supprimé" })
-}
-
-// ============================= CREATE CUSTOM PRODUCT =======================
-export const createCustomProduct = async (req, res) => {
-    const { name, price, imageUrl } = req.body 
-
-    if (!name || !price) {
-        throw new BadRequestError("Le nom et le prix sont obligatoires pour un bouquet sur-mesure.") 
-    }
-
-    const customProduct = await Product.create({
-        name: `Sur-mesure : ${name}`,
-        price: Number(price),
-        imageUrl: imageUrl || "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400&q=80",
-        category: 'Sur-Mesure',
-        stock: 999,
-        description: "Création unique composée sur-mesure par le client depuis l'Atelier Floréal."
-    }) 
-
-    res.status(StatusCodes.CREATED).json({ 
-        success: true, 
-        message: "Bouquet sur-mesure généré", 
-        product: customProduct 
-    }) 
 } 

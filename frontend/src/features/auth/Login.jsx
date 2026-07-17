@@ -21,7 +21,7 @@ const handleSubmit = async (e) => {
   try {
     if (isForgotPassword) {
       // ─── API : MOT DE PASSE OUBLIÉ ───
-      const response = await api.post('/api/client/forgotpassword', { email });
+      const response = await api.post('/api/auth/forgotpassword', { email });
       setSuccessMessage(response.data.message || 'Un e-mail de récupération a été envoyé.');
       setIsLoading(false);
     } else {
