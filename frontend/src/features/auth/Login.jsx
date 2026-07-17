@@ -11,7 +11,7 @@ export default function Login({ onLoginSuccess }) {
   
   // États de bascule pour l'API
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false); // 💡 Nouveau : Mode mot de passe oublié
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 const handleSubmit = async (e) => {
   e.preventDefault();
   setError('');
@@ -32,12 +32,10 @@ const handleSubmit = async (e) => {
         return;
       }
 
-      // On cible la bonne route selon l'onglet actif
       const targetRoute ='/api/auth/login';
       
       await api.post(targetRoute, { email, password });
       
-      // Si le serveur répond avec succès, le cookie est déjà enregistré par le navigateur !
       setIsLoading(false);
       if (onLoginSuccess) {
         onLoginSuccess(isAdmin ? 'admin' : 'client');
@@ -45,7 +43,6 @@ const handleSubmit = async (e) => {
     }
   } catch (err) {
     setIsLoading(false);
-    // On récupère le message d'erreur renvoyé par son modèle Node.js
     setError(err.response?.data?.message || 'Identifiants incorrects ou problème de serveur.');
   }
 };

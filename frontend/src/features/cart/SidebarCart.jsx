@@ -4,7 +4,7 @@ import { removeItem, addItem, deleteItem, clearCart } from '../../store/cartSlic
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowLeft, Send } from 'lucide-react';
 import api from '../../api/axios'; 
 
-export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) { // 💡 Ajout de onOrderSuccess dans les props
+export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false); 
   
@@ -15,7 +15,7 @@ export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) { // �
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: '', // 💡 Ajout du champ email
+    email: '',
     address: '',
     notes: ''
   });
@@ -23,17 +23,14 @@ export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) { // �
   // ─── LECTURE DU PANIER REDUX ───
   const items = useSelector((state) => state.cart?.items) || [];
   
-  // Calculs dynamiques
   const totalArticles = items.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  // Gérer la saisie du formulaire
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Réinitialiser la sidebar à sa fermeture
   const handleClose = () => {
     setStep('cart');
     setFormData({ name: '', phone: '', email: '', address: '', notes: '' });
@@ -45,16 +42,13 @@ export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) { // �
     e.preventDefault();
     if (items.length === 0) return;
 
-    // Payload complet envoyé à ton amie côté back-end
 const orderPayload = {
       items: items.map(item => {
-        // Base commune (on utilise bien la clé "price" attendue par le backend)
         const baseItem = {
           quantity: item.quantity,
           price: item.price 
         };
 
-        // Si c'est une création de l'Atelier
         if (item.isCustom) {
           return {
             ...baseItem,
@@ -64,13 +58,11 @@ const orderPayload = {
           };
         }
         
-        // Si c'est un produit standard du catalogue
         return {
           ...baseItem,
           product: item._id
         };
       }),
-      // Le backend le recalcule, mais on peut le laisser à titre informatif
       totalAmount: totalPrice, 
       deliveryDetails: {
         customerName: formData.name,
@@ -88,7 +80,6 @@ const orderPayload = {
       
       dispatch(clearCart()); 
       
-      // 🔄 Déclenchement automatique de la mise à jour sur l'interface de suivi
       if (onOrderSuccess) {
         onOrderSuccess();
       }

@@ -5,21 +5,19 @@ import api from '../api/axios';
 export default function ClientOrders({ refreshTrigger }) {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [expandedOrder, setExpandedOrder] = useState(null); // Pour afficher le détail d'une commande
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
   // ─── CHARGEMENT DES COMMANDES DU CLIENT CONNECTÉ ───
   useEffect(() => {
     const fetchClientOrders = async () => {
       try {
         setIsLoading(true);
-        // 💡 Changement ici : On utilise la route exacte définie dans ton back-end !
         const response = await api.get('/api/orders/mine'); 
         
         const dataOrders = Array.isArray(response.data) 
           ? response.data 
           : response.data.orders || [];
           
-        // Trier du plus récent au plus ancien
         setOrders(dataOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       } catch (err) {
         console.error("Erreur lors de la récupération de vos commandes", err);
@@ -30,9 +28,8 @@ export default function ClientOrders({ refreshTrigger }) {
     };
 
     fetchClientOrders();
-  }, [refreshTrigger]); // Se recharge automatiquement quand refreshTrigger change !
+  }, [refreshTrigger]);
 
-  // Formatage de la date
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     return date.toLocaleDateString('fr-FR', {
@@ -44,12 +41,10 @@ export default function ClientOrders({ refreshTrigger }) {
     });
   };
 
-  // Basculer l'affichage des détails
   const toggleExpand = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
-  // Statuts stylisés (Identiques à l'admin pour la cohérence)
   const getStatusHelper = (status) => {
     const helpers = {
       pending: {

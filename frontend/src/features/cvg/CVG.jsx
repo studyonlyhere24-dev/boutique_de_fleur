@@ -70,7 +70,6 @@ function PetalRain({ count = 10 }) {
 // ─── COMPOSANT CONDITIONS GÉNÉRALES DE VENTE ───
 export default function CGV() {
 
-  // Remonter en haut de la page au chargement
   useEffect(() => {
     window.scrollTo({
       top: 0,

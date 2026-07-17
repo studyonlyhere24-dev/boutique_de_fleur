@@ -1,7 +1,12 @@
 import { ShoppingBag, User, LogOut, BookOpen } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, currentPage }) {
   const isAdmin = userRole === 'admin';
+
+  const items = useSelector((state) => state.cart?.items) || [];
+  
+  const totalArticles = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <nav className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-100">
@@ -63,6 +68,13 @@ export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, cur
                 aria-label="Ouvrir le panier"
               >
                 <ShoppingBag className="h-5 w-5 stroke-[1.5]" />
+                
+                {/* 🌟 LE BADGE DU PANIER 🌟 */}
+                {totalArticles > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center w-[18px] h-[18px] text-[10px] font-bold text-white bg-sage-600 rounded-full transform translate-x-1/4 -translate-y-1/4 shadow-sm border border-white">
+                    {totalArticles}
+                  </span>
+                )}
               </button>
             )}
 

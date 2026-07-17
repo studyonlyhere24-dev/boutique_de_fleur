@@ -5,11 +5,9 @@ export default function StickyCartBanner({ onOpenCart }) {
   // ─── ON LIT LE PANIER DEPUIS REDUX COMME AVANT ───
   const items = useSelector((state) => state.cart?.items) || [];
   
-  // Calcul du nombre total d'articles et du prix total
   const totalArticles = items.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  // Si le panier est vide, on n'affiche rien
   if (totalArticles === 0) return null;
 
   return (

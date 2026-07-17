@@ -18,7 +18,6 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   
-  // FIX: On force 'catalog' au démarrage pour afficher la boutique immédiatement
   const [currentPage, setCurrentPage] = useState('catalog'); 
   const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
   const [refreshOrdersTrigger, setRefreshOrdersTrigger] = useState(0);

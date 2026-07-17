@@ -5,7 +5,6 @@ import { Droplet, Scissors, ThermometerSun, Sparkles, Heart, ChevronDown } from 
 export default function CareGuide() {
   const [activeFaq, setActiveFaq] = useState(null);
 
-  // Données des étapes de soin
   const steps = [
     {
       icon: <Scissors className="h-6 w-6 text-rose-500" />,
@@ -27,14 +26,12 @@ export default function CareGuide() {
     }
   ];
 
-  // Données de la FAQ
   const faqs = [
     { q: "Pourquoi mon hortensia baisse-t-il la tête ?", a: "Les hortensias boivent énormément par la fleur. Plongez la tête entière du bouquet dans un bain d'eau fraîche pendant 10 minutes pour le réhydrater par le haut !" },
     { q: "Faut-il utiliser les sachets de nourriture fournis ?", a: "Oui ! Ils contiennent du sucre pour nourrir la corolle et un antibactérien léger pour garder l'eau saine." },
     { q: "Que faire si mes roses fanent trop vite ?", a: "Recoupez la tige un peu plus haut et plongez le bas de la tige dans de l'eau très chaude pendant 30 secondes avant de la remettre dans son vase d'eau fraîche." }
   ];
 
-  // Configurations d'animation réutilisables (Variantes)
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
