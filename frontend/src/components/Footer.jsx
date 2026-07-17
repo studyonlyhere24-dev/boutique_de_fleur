@@ -1,7 +1,7 @@
 
 import { Globe, Phone, Mail } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
   return (
     <footer className="w-full bg-stone-50/60 text-stone-600 border-t border-stone-200/80 py-12 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,11 +21,11 @@ export default function Footer() {
             <ul className="space-y-2 text-xs font-light text-muted">
               <li className="flex items-center gap-2">
                 <Phone className="h-3.5 w-3.5 text-sage-600" />
-                <span>+213 (0) 555 55 55 55</span>
+                <span>+213 (0) 550 12 34 56</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-3.5 w-3.5 text-sage-600" />
-                <span>contact@floraconnect.com</span>
+                <span>contact@floraconnect.dz</span>
               </li>
             </ul>
           </div>
@@ -58,11 +58,20 @@ export default function Footer() {
 
         {/* Barre de copyright */}
         <div className="mt-12 pt-6 border-t border-stone-200 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] font-light text-muted">
-          <p>© {new Date().getFullYear()} FloraConnect. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Maison Florale. Tous droits réservés.</p>
           <div className="flex gap-4">
-            <a href="#mentions" className="hover:text-sage-600 transition-colors">Mentions légales</a>
+        {/* Les mentions légales */}
+        <button 
+          onClick={() => onNavigate('legal-notices')}
+          className="hover:text-sage-600 transition-colors bg-transparent border-none cursor-pointer"
+        >
+          Mentions Légales
+        </button>
             <span className="text-stone-300">|</span>
-            <a href="#cgv" className="hover:text-sage-600 transition-colors">CGV</a>
+        {/* CGV */}
+        <button 
+          onClick={() => onNavigate('cgv')}
+          className="hover:text-sage-600 transition-colors bg-transparent border-none cursor-pointer"> CGV </button>          
           </div>
         </div>
       </div>

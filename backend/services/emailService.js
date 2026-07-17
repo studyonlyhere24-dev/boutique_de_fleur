@@ -8,7 +8,7 @@ import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER
 export const sendPasswordResetEmail = async (email, resetURL) => {
   try {
     const response = await transporter.sendMail({
-      from: `"FloraNet" <${process.env.EMAIL_USER}>`,
+      from: `"Maison Fleurale" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Reset your password",
       html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
@@ -24,7 +24,7 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
 export const sendResetSuccessEmail = async (email) => {
   try {
     const response = await transporter.sendMail({
-      from: `"FloraNet" <${process.env.EMAIL_USER}>`,
+      from: `"Maison Fleurale" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset Successful",
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
@@ -44,7 +44,7 @@ export const sendOrderConfirmationEmail = async (email, order) => {
     const htmlContent = ORDER_CONFIRMATION_TEMPLATE(order, orderId) 
 
     const response = await transporter.sendMail({
-      from: `"FloraNet" <${process.env.EMAIL_USER}>`,
+      from: `"Maison Fleurale" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Confirmation de votre commande n°${orderId}`,
       html: htmlContent,

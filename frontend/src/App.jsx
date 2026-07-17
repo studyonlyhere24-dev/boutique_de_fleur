@@ -11,6 +11,8 @@ import StickyCartBanner from './features/cart/StickyCartBanner';
 import Login from './features/auth/Login';
 import AdminDashboard from './features/admin/AdminDashboard';
 import ClientOrders from './orders/ClientOrders'; 
+import LegalNotices from './features/legal/LegalNotices';
+import CGV from './features/cvg/CVG';
 
 export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -120,9 +122,15 @@ export default function App() {
           {currentPage === 'my-orders' && userRole && !isAdmin && (
             <ClientOrders refreshTrigger={refreshOrdersTrigger} />
           )}
+
+          {currentPage === 'legal-notices' && (
+            <LegalNotices />
+          )}
+
+          {currentPage === 'cgv' && ( <CGV /> )}
         </main>
 
-        <Footer />
+        <Footer onNavigate={(page) => setCurrentPage(page)} />
 
         {!isAdmin && (
           <>
