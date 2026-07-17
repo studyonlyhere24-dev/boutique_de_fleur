@@ -43,7 +43,7 @@ export default function Catalog({ onOpenCart }) {
 
   const customPrice = (base + flowerType) * size;
 
-  const handleAddCustomBouquet = () => {
+ const handleAddCustomBouquet = () => {
     const flowerNames = { 2500: "Roses Poudrées", 3500: "Pivoines Royales", 1800: "Fleurs Sauvages" };
     const flowerImages = {
       2500: "https://images.unsplash.com/photo-1533616688419-b7a585564566?w=400&q=80",
@@ -51,15 +51,24 @@ export default function Catalog({ onOpenCart }) {
       1800: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80"
     };
 
-    dispatch(addItem({
-      ...flowerImages,
-      _id: `custom-${Date.now()}`,
+    const tempId = `custom_${Date.now()}`; // Format texte standard
+
+    const customProduct = {
+      _id: tempId, // Utile uniquement pour le CartContext / Redux (clé unique)
       name: `Sur-mesure : ${flowerNames[flowerType]}`,
       isCustom: true,
-      price: customPrice,
+      price: Number(customPrice),
       imageUrl: flowerImages[flowerType],
-      quantity: 1
-    }));
+      quantity: 1,
+      stock: 999, // Pour bypasser la sécurité de ton cartSlice
+      customDetails: { 
+        base: base === 1200 ? "Feuillage Linéaire" : "Eucalyptus Premium",
+        flower: flowerNames[flowerType],
+        size: size === 1 ? "Format Délicat" : "Majestueux"
+      }
+    };
+
+    dispatch(addItem(customProduct));
     onOpenCart();
   };
 
