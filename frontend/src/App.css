@@ -219,3 +219,17 @@ html, body {
     border-right-color: var(--border);
   }
 }
+@keyframes drift {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--dx)) rotate(360deg);
+  }
+}
+
+.animate-drift {
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}

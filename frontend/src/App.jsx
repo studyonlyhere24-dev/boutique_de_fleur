@@ -3,8 +3,9 @@ import { BrowserRouter } from 'react-router-dom';
 import api from './api/axios';
 
 import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // Importation déjà présente
+import Footer from './components/Footer'; 
 import Catalog from './features/catalog/Catalog';
+import CareGuide from './features/guide/CareGuide'; 
 import SidebarCart from './features/cart/SidebarCart';
 import StickyCartBanner from './features/cart/StickyCartBanner';
 import Login from './features/auth/Login';
@@ -14,17 +15,16 @@ import ClientOrders from './orders/ClientOrders';
 export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  
+  // FIX: On force 'catalog' au démarrage pour afficher la boutique immédiatement
   const [currentPage, setCurrentPage] = useState('catalog'); 
   const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
-
-  // 🔄 ÉTAT DE RAFRAÎCHISSEMENT DE LA LISTE DES COMMANDES
   const [refreshOrdersTrigger, setRefreshOrdersTrigger] = useState(0);
 
   const triggerOrdersRefresh = () => {
     setRefreshOrdersTrigger(prev => prev + 1);
   };
 
-  // ─── GESTION DU CATALOGUE (SÉLECTION D'UN BOUQUET) ───
   const handleCatalogAddProduct = () => {
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
@@ -34,7 +34,6 @@ export default function App() {
     }
   };
 
-  // ─── VÉRIFICATION DE LA SESSION AU CHARGEMENT (F5) ───
   useEffect(() => {
     const verifierSession = async () => {
       try {
@@ -65,7 +64,6 @@ export default function App() {
     }
   };
 
-  // ─── DÉCONNEXION ───
   const handleLogout = async () => {
     try {
       await api.post('/api/auth/logout');
@@ -90,22 +88,27 @@ export default function App() {
 
   return (
     <BrowserRouter> 
-      {/* 1. ON ACTIVE LE FLEXBOX ICI : "flex flex-col min-h-screen" */}
-      <div className="min-h-screen bg-white text-dark antialiased relative flex flex-col">
+      <div className="min-h-screen bg-powder-50 text-dark antialiased relative flex flex-col">
         
+        {/* FIX CONTEXTE: Passage obligatoire de currentPage et onNavigate */}
         <Navbar 
           onOpenCart={() => setIsCartOpen(true)} 
           userRole={userRole}
           onLogout={handleLogout}
           onNavigate={(page) => setCurrentPage(page)}
+          currentPage={currentPage}
         />
 
-        {/* 2. ON RAJOUTE "flex-grow" ICI : Le contenu principal va pousser le footer vers le bas */}
         <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+          
           {currentPage === 'catalog' && (
-            <Catalog onOpenCart={handleCatalogAddProduct} /> 
+            <Catalog onOpenCart={handleCatalogAddProduct} onNavigate={(page) => setCurrentPage(page)} /> 
           )}
           
+          {currentPage === 'care-guide' && (
+            <CareGuide onNavigate={(page) => setCurrentPage(page)} />
+          )}
+
           {currentPage === 'login' && (
             <Login onLoginSuccess={handleLoginSuccess} />
           )}
@@ -114,16 +117,13 @@ export default function App() {
             <AdminDashboard />
           )}
 
-          {/* Suivi des commandes */}
           {currentPage === 'my-orders' && userRole && !isAdmin && (
             <ClientOrders refreshTrigger={refreshOrdersTrigger} />
           )}
         </main>
 
-        {/* 3. LE FOOTER EST PLACÉ ICI, À LA RACINE DU LAYOUT */}
         <Footer />
 
-        {/* Panier & Bannière collante (Masqués pour l'admin) */}
         {!isAdmin && (
           <>
             <SidebarCart 

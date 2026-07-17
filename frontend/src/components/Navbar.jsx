@@ -1,170 +1,93 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { ShoppingBag, User, Menu, X, LogOut, ShieldCheck, ClipboardList } from 'lucide-react';
+import { ShoppingBag, User, LogOut, BookOpen } from 'lucide-react';
 
-export default function Navbar({ onOpenCart, onNavigate, userRole, onLogout }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Navbar({ onOpenCart, userRole, onLogout, onNavigate, currentPage }) {
   const isAdmin = userRole === 'admin';
 
-  // ─── LECTURE DU STORE REDUX (Adapté aux noms de l'API) ───
-  const items = useSelector((state) => state.cart?.items) || [];
-  const totalArticles = items.reduce((total, item) => total + item.quantity, 0);
-
   return (
-    <>
-      {/* 1. LA NAVBAR FIXÉE */}
-      <nav className="w-full bg-white border-b border-gray-100 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
+    <nav className="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          
+          {/* ─── LOGO (RETOUR STRICT AU CATALOGUE) ─── */}
+          <div 
+            onClick={() => onNavigate('catalog')} 
+            className="flex items-center gap-2 cursor-pointer group"
+          >
+            <span className="font-serif text-xl font-medium tracking-wide text-dark transition-colors group-hover:text-sage-600">
+              Maison Florale
+            </span>
+          </div>
+
+          {/* ─── LIENS DE NAVIGATION ─── */}
+          <div className="hidden md:flex items-center gap-8 text-sm font-light text-muted">
             
-            {/* LOGO (Redirige vers le Dashboard si Admin, sinon le Catalogue) */}
+            {/* BOUTON BOUTIQUE -> VA VERS 'catalog' */}
             <button 
-              onClick={() => onNavigate(isAdmin ? 'admin-dashboard' : 'catalog')} 
-              className="flex items-center gap-2 flex-shrink-0 bg-transparent border-0 cursor-pointer"
+              onClick={() => onNavigate('catalog')}
+              className={`transition-colors hover:text-dark ${currentPage === 'catalog' ? 'text-dark font-medium' : ''}`}
             >
-              <span className="text-xl font-serif font-semibold tracking-wide text-dark">
-                Fleuriste<span className="text-sage-500">.</span>
-              </span>
+              Boutique
+            </button>
+            
+            {/* BOUTON GUIDE -> VA VERS 'care-guide' */}
+            <button 
+              onClick={() => onNavigate('care-guide')}
+              className={`flex items-center gap-1.5 transition-colors hover:text-dark ${currentPage === 'care-guide' ? 'text-dark font-medium' : ''}`}
+            >
+              <BookOpen className="h-3.5 w-3.5" /> Guide d'Entretien
             </button>
 
-            {/* LIENS PC */}
-            <div className="hidden md:flex items-center gap-8">
-              {/* 💡 S'affiche uniquement pour les clients (Masqué pour l'admin) */}
-              {!isAdmin && (
-                <button 
-                  onClick={() => onNavigate('catalog')} 
-                  className="text-sm font-medium text-dark hover:text-sage-600 transition-colors bg-transparent border-0 cursor-pointer"
-                >
-                  Catalogue
-                </button>
-              )}
-
-              {/* 💡 NOUVEAU : Rubrique "Mes commandes" accessible uniquement au client connecté */}
-              {userRole && !isAdmin && (
-                <button 
-                  onClick={() => onNavigate('my-orders')} 
-                  className="text-sm font-medium text-dark hover:text-sage-600 transition-colors bg-transparent border-0 cursor-pointer flex items-center gap-1"
-                >
-                  <ClipboardList className="h-4 w-4 text-gray-400" /> Mes commandes
-                </button>
-              )}
-              
-              {isAdmin && (
-                <button 
-                  onClick={() => onNavigate('admin-dashboard')} 
-                  className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors bg-transparent border-0 cursor-pointer flex items-center gap-1.5 bg-purple-50 px-3 py-1.5 rounded-full"
-                >
-                  <ShieldCheck className="h-4 w-4" /> Dashboard Admin
-                </button>
-              )}
-            </div>
-
-            {/* ACTIONS */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              
-              {/* 💡 MASQUÉ POUR L'ADMIN : Bouton Panier */}
-              {!isAdmin && (
-                <button 
-                  onClick={onOpenCart}
-                  className="relative p-2 text-dark hover:bg-gray-50 rounded-full transition-colors"
-                  aria-label="Ouvrir le panier"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  {totalArticles > 0 && (
-                    <span className="absolute top-1 right-1 bg-sage-600 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
-                      {totalArticles}
-                    </span>
-                  )}
-                </button>
-              )}
-
-              {/* BOUTON DYNAMIQUE CONNEXION / COMPTE / DECONNEXION */}
-              {userRole ? (
-                <button 
-                  onClick={onLogout}
-                  className="hidden sm:flex items-center gap-2 px-4 h-10 border border-rose-200 text-rose-600 rounded-xl text-sm font-medium hover:bg-rose-50 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Déconnexion
-                </button>
-              ) : (
-                <button 
-                  onClick={() => onNavigate('login')}
-                  className="hidden sm:flex items-center gap-2 px-4 h-10 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors text-dark"
-                >
-                  <User className="h-4 w-4 text-muted" />
-                  Connexion
-                </button>
-              )}
-
-              {/* Burger Menu Button (Mobile) */}
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-dark hover:bg-gray-50 rounded-full md:hidden transition-colors"
-              >
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        {/* MENU MOBILE */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-50 bg-white px-6 py-5 space-y-4 shadow-inner flex flex-col items-start">
-            
-            {/* 💡 Option Catalogue pour mobile */}
-            {!isAdmin && (
-              <button 
-                onClick={() => { setIsMenuOpen(false); onNavigate('catalog'); }}
-                className="text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 block w-full text-left bg-transparent border-0"
-              >
-                Catalogue
-              </button>
-            )}
-
-            {/* 💡 NOUVEAU SUR MOBILE : Option Mes commandes */}
             {userRole && !isAdmin && (
               <button 
-                onClick={() => { setIsMenuOpen(false); onNavigate('my-orders'); }}
-                className="text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 block w-full text-left bg-transparent border-0 flex items-center gap-2"
+                onClick={() => onNavigate('my-orders')}
+                className={`transition-colors hover:text-dark ${currentPage === 'my-orders' ? 'text-dark font-medium' : ''}`}
               >
-                <ClipboardList className="h-5 w-5 text-gray-400" /> Mes commandes
+                Mes Commandes
               </button>
             )}
 
             {isAdmin && (
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">
+                Mode Admin
+              </span>
+            )}
+          </div>
+
+          {/* ─── ACTIONS (PANIER / COMPTE) ─── */}
+          <div className="flex items-center gap-4">
+            {!isAdmin && (
               <button 
-                onClick={() => { setIsMenuOpen(false); onNavigate('admin-dashboard'); }}
-                className="text-base font-medium text-purple-600 hover:text-purple-700 transition-colors py-1 block w-full text-left bg-transparent border-0 flex items-center gap-2"
+                onClick={onOpenCart}
+                className="p-2 text-stone-600 hover:text-dark transition-colors relative"
+                aria-label="Ouvrir le panier"
               >
-                <ShieldCheck className="h-5 w-5" /> Dashboard Admin
+                <ShoppingBag className="h-5 w-5 stroke-[1.5]" />
               </button>
             )}
 
             {userRole ? (
-              <button 
-                onClick={() => { setIsMenuOpen(false); onLogout(); }}
-                className="flex items-center gap-2 text-base font-medium text-rose-600 hover:text-rose-700 transition-colors py-1 w-full text-left bg-transparent border-0"
-              >
-                <LogOut className="h-4 w-4" />
-                Se déconnecter
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={onLogout}
+                  className="p-2 text-stone-500 hover:text-rose-600 transition-colors flex items-center gap-1 text-xs font-light"
+                  title="Se déconnecter"
+                >
+                  <LogOut className="h-4 w-4 stroke-[1.5]" />
+                  <span className="hidden sm:inline">Déconnexion</span>
+                </button>
+              </div>
             ) : (
               <button 
-                onClick={() => { setIsMenuOpen(false); onNavigate('login'); }}
-                className="flex items-center gap-2 text-base font-medium text-dark hover:text-sage-600 transition-colors py-1 w-full text-left bg-transparent border-0"
+                onClick={() => onNavigate('login')}
+                className="inline-flex h-9 items-center justify-center rounded-full bg-stone-900 px-4 text-xs font-medium text-white transition-all hover:bg-stone-800"
               >
-                <User className="h-4 w-4 text-muted" />
-                Se connecter
+                <User className="h-3.5 w-3.5 mr-1.5" /> Connexion
               </button>
             )}
           </div>
-        )}
-      </nav>
 
-      {/* 2. LE COUSSIN INVISIBLE */}
-      <div className="h-16 w-full" />
-    </>
+        </div>
+      </div>
+    </nav>
   );
 }
