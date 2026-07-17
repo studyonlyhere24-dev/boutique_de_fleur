@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import api from './api/axios';
 
 import Navbar from './components/Navbar';
+import Footer from './components/Footer'; // Importation déjà présente
 import Catalog from './features/catalog/Catalog';
 import SidebarCart from './features/cart/SidebarCart';
 import StickyCartBanner from './features/cart/StickyCartBanner';
@@ -27,11 +28,8 @@ export default function App() {
   const handleCatalogAddProduct = () => {
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
-      // Sur mobile, quand on ajoute un bouquet, on n'ouvre pas le grand tiroir.
-      // On laisse juste la bannière verte (StickyCartBanner) s'actualiser en bas.
       setIsCartOpen(false);
     } else {
-      // Sur PC, on ouvre directement la Sidebar à droite
       setIsCartOpen(true);
     }
   };
@@ -92,18 +90,20 @@ export default function App() {
 
   return (
     <BrowserRouter> 
-      <div className="min-h-screen bg-white text-dark antialiased relative">
+      {/* 1. ON ACTIVE LE FLEXBOX ICI : "flex flex-col min-h-screen" */}
+      <div className="min-h-screen bg-white text-dark antialiased relative flex flex-col">
         
         <Navbar 
-          onOpenCart={() => setIsCartOpen(true)} // 💡 Toujours ouvrir le panier quand on clique sur la Navbar
+          onOpenCart={() => setIsCartOpen(true)} 
           userRole={userRole}
           onLogout={handleLogout}
           onNavigate={(page) => setCurrentPage(page)}
         />
 
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* 2. ON RAJOUTE "flex-grow" ICI : Le contenu principal va pousser le footer vers le bas */}
+        <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex-grow">
           {currentPage === 'catalog' && (
-            <Catalog onOpenCart={handleCatalogAddProduct} /> // 💡 N'ouvre le tiroir que sur PC lors d'un ajout
+            <Catalog onOpenCart={handleCatalogAddProduct} /> 
           )}
           
           {currentPage === 'login' && (
@@ -120,7 +120,10 @@ export default function App() {
           )}
         </main>
 
-        {/* Panier & Bannière collante */}
+        {/* 3. LE FOOTER EST PLACÉ ICI, À LA RACINE DU LAYOUT */}
+        <Footer />
+
+        {/* Panier & Bannière collante (Masqués pour l'admin) */}
         {!isAdmin && (
           <>
             <SidebarCart 
