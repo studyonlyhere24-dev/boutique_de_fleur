@@ -46,17 +46,36 @@ export default function SidebarCart({ isOpen, onClose, onOrderSuccess }) { // �
     if (items.length === 0) return;
 
     // Payload complet envoyé à ton amie côté back-end
-    const orderPayload = {
-      items: items.map(item => ({
-        product: item._id,            
-        quantity: item.quantity,       
-        priceAtPurchase: item.price    
-      })),
-      totalAmount: totalPrice,
+const orderPayload = {
+      items: items.map(item => {
+        // Base commune (on utilise bien la clé "price" attendue par le backend)
+        const baseItem = {
+          quantity: item.quantity,
+          price: item.price 
+        };
+
+        // Si c'est une création de l'Atelier
+        if (item.isCustom) {
+          return {
+            ...baseItem,
+            isCustom: true,
+            name: item.name,
+            customDetails: item.customDetails
+          };
+        }
+        
+        // Si c'est un produit standard du catalogue
+        return {
+          ...baseItem,
+          product: item._id
+        };
+      }),
+      // Le backend le recalcule, mais on peut le laisser à titre informatif
+      totalAmount: totalPrice, 
       deliveryDetails: {
         customerName: formData.name,
         phone: formData.phone,
-        email: formData.email, // 💡 Envoyé au serveur
+        email: formData.email, 
         address: formData.address,
         notes: formData.notes
       }

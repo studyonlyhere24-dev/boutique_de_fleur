@@ -69,7 +69,7 @@ export const ORDER_CONFIRMATION_TEMPLATE = (order, orderId) => {
     // 🌸 Modification : Ajout de la classe "mobile-cell" pour le responsive
     const itemsHtml = order.items.map(item => `
         <tr>
-            <td class="mobile-cell" style="padding: 16px 10px; border-bottom: 1px solid #f3f4f6; color: #292524;"><strong>${item.product.name}</strong></td>
+            <td class="mobile-cell" style="padding: 16px 10px; border-bottom: 1px solid #f3f4f6; color: #292524;"><strong>${item.name}</strong></td>
             <td class="mobile-cell" style="padding: 16px 10px; border-bottom: 1px solid #f3f4f6; text-align: center; color: #78716C;">${item.quantity}</td>
             <td class="mobile-cell hide-mobile" style="padding: 16px 10px; border-bottom: 1px solid #f3f4f6; text-align: right; color: #78716C;">${item.priceAtPurchase.toLocaleString('fr-FR')} DA</td>
             <td class="mobile-cell" style="padding: 16px 10px; border-bottom: 1px solid #f3f4f6; text-align: right; font-weight: 600; color: #6B8767;">${(item.quantity * item.priceAtPurchase).toLocaleString('fr-FR')} DA</td>
