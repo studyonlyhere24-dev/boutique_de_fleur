@@ -1,122 +1,148 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom'; 
+import api from './api/axios';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from './components/Navbar';
+import Footer from './components/Footer'; 
+import Catalog from './features/catalog/Catalog';
+import CareGuide from './features/guide/CareGuide'; 
+import SidebarCart from './features/cart/SidebarCart';
+import StickyCartBanner from './features/cart/StickyCartBanner';
+import Login from './features/auth/Login';
+import AdminDashboard from './features/admin/AdminDashboard';
+import ClientOrders from './orders/ClientOrders'; 
+import LegalNotices from './features/legal/LegalNotices';
+import CGV from './features/cvg/CVG';
+
+export default function App() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  
+  const [currentPage, setCurrentPage] = useState('catalog'); 
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true); 
+  const [refreshOrdersTrigger, setRefreshOrdersTrigger] = useState(0);
+
+  const triggerOrdersRefresh = () => {
+    setRefreshOrdersTrigger(prev => prev + 1);
+  };
+
+  const handleCatalogAddProduct = () => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setIsCartOpen(false);
+    } else {
+      setIsCartOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    const verifierSession = async () => {
+      try {
+        const response = await api.get('/api/auth/checkauth');
+        const role = response.data.role || 'client';
+        setUserRole(role);
+        
+        if (role === 'admin') {
+          setCurrentPage('admin-dashboard');
+        }
+      } catch (error) {
+        console.warn("Session non active ou expirée :", error.message);
+        setUserRole(null); 
+      } finally {
+        setIsCheckingAuth(false); 
+      }
+    };
+
+    verifierSession();
+  }, []);
+
+  const handleLoginSuccess = (role) => {
+    setUserRole(role); 
+    if (role === 'admin') {
+      setCurrentPage('admin-dashboard'); 
+    } else {
+      setCurrentPage('catalog'); 
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+    } finally {
+      setUserRole(null);
+      setCurrentPage('catalog');
+    }
+  };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-stone-50/50">
+        <div className="h-8 w-8 border-4 border-sage-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm font-light text-muted font-serif">Vérification de l'accès...</p>
+      </div>
+    );
+  }
+
+  const isAdmin = userRole === 'admin';
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter> 
+      <div className="min-h-screen bg-powder-50 text-dark antialiased relative flex flex-col">
+        
+        {/* FIX CONTEXTE: Passage obligatoire de currentPage et onNavigate */}
+        <Navbar 
+          onOpenCart={() => setIsCartOpen(true)} 
+          userRole={userRole}
+          onLogout={handleLogout}
+          onNavigate={(page) => setCurrentPage(page)}
+          currentPage={currentPage}
+        />
 
-      <div className="ticks"></div>
+        <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+          
+          {currentPage === 'catalog' && (
+            <Catalog onOpenCart={handleCatalogAddProduct} onNavigate={(page) => setCurrentPage(page)} /> 
+          )}
+          
+          {currentPage === 'care-guide' && (
+            <CareGuide onNavigate={(page) => setCurrentPage(page)} />
+          )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {currentPage === 'login' && (
+            <Login onLoginSuccess={handleLoginSuccess} />
+          )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {currentPage === 'admin-dashboard' && isAdmin && (
+            <AdminDashboard />
+          )}
+
+          {currentPage === 'my-orders' && userRole && !isAdmin && (
+            <ClientOrders refreshTrigger={refreshOrdersTrigger} />
+          )}
+
+          {currentPage === 'legal-notices' && (
+            <LegalNotices />
+          )}
+
+          {currentPage === 'cgv' && ( <CGV /> )}
+        </main>
+
+        <Footer onNavigate={(page) => setCurrentPage(page)} />
+
+        {!isAdmin && (
+          <>
+            <SidebarCart 
+              isOpen={isCartOpen} 
+              onClose={() => setIsCartOpen(false)} 
+              onOrderSuccess={triggerOrdersRefresh} 
+            />
+            <StickyCartBanner onOpenCart={() => setIsCartOpen(true)} />
+          </>
+        )}
+        
+      </div>
+    </BrowserRouter>
+  );
 }
-
-export default App

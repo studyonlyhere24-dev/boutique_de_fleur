@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <defs>
+    <!-- 🌸 Définition d'un pétale avec contour -->
+    <g id="petal">
+      <path d="M 50 50 C 18 35, 23 6, 40 8 C 45 8.5, 48 13, 50 18 C 52 13, 55 8.5, 60 8 C 77 6, 82 35, 50 50 Z" 
+            fill="#F79CBA" 
+            stroke="#E37593" 
+            stroke-width="1.2" 
+            stroke-linejoin="round" />
+    </g>
+
+    <!-- ✨ Définition d'une étamine longue (pointe vers la fente du pétale) -->
+    <g id="long-stamen">
+      <line x1="50" y1="50" x2="50" y2="22" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" />
+      <circle cx="50" cy="21" r="1.5" fill="#FCE053" />
+    </g>
+
+    <!-- ✨ Définition d'une étamine courte (pointe vers le creux entre les pétales) -->
+    <g id="short-stamen">
+      <line x1="50" y1="50" x2="50" y2="34" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" />
+      <circle cx="50" cy="33" r="1.5" fill="#FCE053" />
+    </g>
+  </defs>
+
+  <!-- 🌸 Génération des 5 pétales en cercle -->
+  <use href="#petal" transform="rotate(0 50 50)" />
+  <use href="#petal" transform="rotate(72 50 50)" />
+  <use href="#petal" transform="rotate(144 50 50)" />
+  <use href="#petal" transform="rotate(216 50 50)" />
+  <use href="#petal" transform="rotate(288 50 50)" />
+
+  <!-- ⚪ Le centre clair de la fleur -->
+  <circle cx="50" cy="50" r="9" fill="#FDE8EE" />
+
+  <!-- ✨ Génération des 5 étamines longues -->
+  <use href="#long-stamen" transform="rotate(0 50 50)" />
+  <use href="#long-stamen" transform="rotate(72 50 50)" />
+  <use href="#long-stamen" transform="rotate(144 50 50)" />
+  <use href="#long-stamen" transform="rotate(216 50 50)" />
+  <use href="#long-stamen" transform="rotate(288 50 50)" />
+
+  <!-- ✨ Génération des 5 étamines courtes (décalées de 36 degrés) -->
+  <use href="#short-stamen" transform="rotate(36 50 50)" />
+  <use href="#short-stamen" transform="rotate(108 50 50)" />
+  <use href="#short-stamen" transform="rotate(180 50 50)" />
+  <use href="#short-stamen" transform="rotate(252 50 50)" />
+  <use href="#short-stamen" transform="rotate(324 50 50)" />
+
+  <!-- ⚪ Le tout petit point blanc central -->
+  <circle cx="50" cy="50" r="3" fill="#FFFFFF" />
+</svg>
