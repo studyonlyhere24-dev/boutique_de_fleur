@@ -77,9 +77,9 @@ function PetalRain({ count = 16 }) {
 export default function Catalog({ onOpenCart }) {
   const dispatch = useDispatch();
   const [flowers, setFlowers] = useState([]); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [category] = useState('Tous');
+  const [category, setCategory] = useState('Tous');
 
   const [base, setBase] = useState(1200);
   const [flowerType, setFlowerType] = useState(2500);
@@ -271,9 +271,47 @@ export default function Catalog({ onOpenCart }) {
         <section id="pret-a-vendre" className="space-y-12 scroll-mt-24">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between border-b border-stone-200 pb-6 gap-6">
             <h2 className="font-serif text-3xl font-medium text-dark">Les Prêts-à-Emporter</h2>
-            <div className="flex flex-wrap gap-4 items-center">
-              <input type="text" placeholder="Rechercher..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 rounded-full border border-stone-200 bg-white/60 pl-4 pr-4 text-xs focus:outline-none w-48" />
-            </div>
+<div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+  
+  {/* 🌟 LE FILTRE EN LISTE DÉROULANTE (SELECT) */}
+  <div className="relative">
+    <select
+      value={category}
+      onChange={(e) => setCategory(e.target.value)}
+      className="h-10 appearance-none rounded-full border border-stone-200 bg-white/60 pl-4 pr-10 text-xs text-stone-700 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500 cursor-pointer transition-all shadow-sm"
+    >
+      {[
+        'Tous', 
+        'Romantique', 
+        "Plantes d'intérieur", 
+        'Saison', 
+        'Événements', 
+        'Roses', 
+        'Champêtre', 
+        'Lys'
+      ].map((cat) => (
+        <option key={cat} value={cat}>
+          {cat}
+        </option>
+      ))}
+    </select>
+    {/* Petite flèche personnalisée pour le menu déroulant */}
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500">
+      <svg className="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+      </svg>
+    </div>
+  </div>
+
+  {/* BARRE DE RECHERCHE */}
+  <input 
+    type="text" 
+    placeholder="Rechercher un bouquet..." 
+    value={search} 
+    onChange={(e) => setSearch(e.target.value)} 
+    className="h-10 rounded-full border border-stone-200 bg-white/60 pl-4 pr-4 text-xs focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500 w-full sm:w-48 shadow-sm transition-all" 
+  />
+</div>
           </div>
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">

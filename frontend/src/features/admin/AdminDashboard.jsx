@@ -511,7 +511,14 @@ export default function AdminDashboard() {
                     <option value="Bouquets">Bouquets</option>
                     <option value="Mariage">Mariage</option>
                     <option value="Plantes">Plantes</option>
-                    <option value="Saison">De Saison</option>
+                    <option value="Saison">Saison</option>
+                    <option value="Romantique">Romantique</option>
+                    <option value="Plantes d'intérieur">Plantes d'intérieur</option>
+                    <option value="Événements">Événements</option>
+                    <option value="Roses">Roses</option>
+                    <option value="Champêtre">Champêtre</option>
+                    <option value="Lys">Lys</option>
+                    
                   </select>
                 </div>
 
