@@ -12,6 +12,7 @@ import orderRoutes from './routes/orderRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
 import { NotFoundError } from './errors/customErrors.js'
+import { authLimiter, globalLimiter } from './middlewares/rateLimiterMiddleware.js'
 
 dotenv.config()
 
@@ -28,11 +29,11 @@ app.use(cookieParser())
 
 connectDB()
 
-app.use('/api/auth', authRoutes)
-app.use('/api/admin', adminRoutes)
-app.use('/api/clients', clientRoutes)
-app.use('/api/orders', orderRoutes)
-app.use('/api/products', productRoutes)
+app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/admin', globalLimiter, adminRoutes)
+app.use('/api/clients',globalLimiter, clientRoutes)
+app.use('/api/orders', globalLimiter, orderRoutes)
+app.use('/api/products', globalLimiter, productRoutes)
 /* 
 app.use('*', (req, res) => {
     throw new NotFoundError(`La route ${req.originalUrl} n'existe pas sur ce serveur`)
